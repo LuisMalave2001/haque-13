@@ -43,7 +43,7 @@ class Contact(models.Model):
     last_name   = fields.Char("Last Name") #, store=True, related="uni_application_id.first_name")
 
     # We need this field as readonly
-    name = fields.Char(index=True, compute="_compute_name", store=True)
+    name = fields.Char(index=True, compute="_compute_name", store=True, readonly=False)
 
     @api.depends("first_name", "middle_name", "last_name")
     def _compute_name(self):
