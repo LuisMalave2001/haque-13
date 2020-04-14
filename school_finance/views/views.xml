@@ -4,14 +4,13 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <group id="header_left_group" position="inside">
-                <field name="partner_family_ids" invisible="1"/>
                 <field name="family_members_ids" invisible="1"/>
                 <field name="student_id" domain="['&amp;', ('id', 'in', family_members_ids), ('person_type', '=', 'student')]" />
-                <field name="family_id" domain="[('id', 'in', partner_family_ids)]" />
+                <field name="family_id" />
             </group>
         </field>
     </record>
-    
+
     <record model="ir.ui.view" id="view_res_partner_school_finance_form_view">
         <field name="name">view_res_partner_school_fields_form_view</field>
         <field name="model">res.partner</field>
@@ -38,11 +37,11 @@
                             <field name="currency_id" invisible="1" />
                             <field name="company_currency_id" invisible="1" />
                             <field name="state" optional="show" />
-                            <field name="invoice_payment_state" optional="hide" />
+                            <field name="invoice_payment_state" optional="show" />
                         </tree>
                     </field>
                 </page>
-                <page string="Invoices">
+                <page string="Invoices" attrs="{'invisible': [('person_type', '=', 'student')]}">
                     <field name="invoice_ids" readonly="0" force_save="1" context="{'default_type': 'out_invoice', 'default_partner_id': active_id}" domain="[('type', 'in', ('out_invoice', 'out_refund','out_receipt'))]">
                         <tree string="Invoices" decoration-info="state == 'draft'" decoration-muted="state == 'cancel'" banner_route="/account/account_invoice_onboarding" js_class="account_tree">
                             <field name="name" />
@@ -62,10 +61,36 @@
                             <field name="currency_id" invisible="1" />
                             <field name="company_currency_id" invisible="1" />
                             <field name="state" optional="show" />
-                            <field name="invoice_payment_state" optional="hide" />
+                            <field name="invoice_payment_state" optional="show" />
                         </tree>
                     </field>
                 </page>
+
+                <page string="Invoices" attrs="{'invisible': [('person_type', '!=', 'student')]}">
+                    <field name="student_invoice_ids" readonly="0" force_save="1" context="{'default_type': 'out_invoice', 'default_partner_id': active_id}" domain="[('type', 'in', ('out_invoice', 'out_refund','out_receipt'))]">
+                        <tree string="Invoices" decoration-info="state == 'draft'" decoration-muted="state == 'cancel'" banner_route="/account/account_invoice_onboarding" js_class="account_tree">
+                            <field name="name" />
+                            <field name="partner_id" invisible="1" />
+                            <field name="invoice_source_email" invisible="1" />
+                            <field name="invoice_partner_icon" string=" " />
+                            <field name="invoice_partner_display_name" groups="base.group_user" string="Customer" />
+                            <field name="invoice_date" optional="show" string="Invoice Date" />
+                            <field name="invoice_origin" optional="show" string="Source Document" />
+                            <field name="invoice_payment_ref" optional="hide" />
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}" optional="show" />
+                            <field name="invoice_date_due" optional="show" />
+                            <field name="amount_untaxed_signed" string="Tax Excluded" sum="Total" optional="show" />
+                            <field name="amount_tax_signed" string="Tax" sum="Total" optional="hide" />
+                            <field name="amount_total_signed" string="Total" sum="Total" optional="show" />
+                            <field name="amount_residual_signed" string="Amount Due" sum="Amount Due" optional="show" />
+                            <field name="currency_id" invisible="1" />
+                            <field name="company_currency_id" invisible="1" />
+                            <field name="state" optional="show" />
+                            <field name="invoice_payment_state" optional="show" />
+                        </tree>
+                    </field>
+                </page>
+
                 <page string="Finance" attrs="{'invisible': [ '|', '&amp;', ('is_company', '=', False), ('person_type', '=', False), '&amp;', ('is_company', '=', True), ('is_family', '=', False)]}">
                     <group attrs="{'invisible': ['|', ('is_family', '=', False), ('is_company', '=', False)]}">
                         <!--                     <group invisible="1">  -->

@@ -8,6 +8,7 @@ class school_finance(models.Model):
     family_invoice_ids = fields.Many2many("account.move", compute="_compute_family_invoice_ids", domain=[('type', '=', 'out_invoice')], context={'default_type': 'out_invoice', 'type': 'out_invoice','tree_view_ref': 'account.view_invoice_tree'})
     invoice_address_id = fields.Many2one("res.partner", string="Invoice Address")
     family_res_finance_ids = fields.One2many("school_finance.financial.res.percent", 'partner_id', string="Family resposability")
+    student_invoice_ids = fields.One2many("account.move", "student_id", string="Student Invoices")
 
     def _check_category_sum(self):
         for record in self:
@@ -45,7 +46,7 @@ class school_finance(models.Model):
         for record in self:
             invoices = False
             if record.is_company:
-                invoices = self.member_ids.invoice_ids + self.invoice_ids
+                invoices = self.member_ids.invoice_ids + self.member_ids.student_invoice_ids + self.invoice_ids
             record.family_invoice_ids = invoices
 
 class FinacialResponsabilityPercent(models.Model):
