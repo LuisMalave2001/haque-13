@@ -9,3 +9,9 @@ class Invoice(models.Model):
     family_id = fields.Many2one("res.partner", string="Family", domain=[('is_family', '=', True)])
 
     family_members_ids = fields.Many2many(related="family_id.member_ids")
+
+
+class Invoice(models.Model):
+    _inherit = "account.journal"
+
+    template_id = fields.Many2one("ir.ui.view", string="Template", domain=[("type", "=", "qweb")])
