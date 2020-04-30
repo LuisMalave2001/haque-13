@@ -1,5 +1,5 @@
 <odoo>
-    <template id="qatar_invoices.report_invoice_document">
+    <template id="haque_invoices.report_invoice_document">
         <t t-set="o" t-value="o.with_context(lang=lang)" />
         <div class="article o_report_layout_stardard" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
             <div class="page" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
@@ -177,7 +177,7 @@
         </div>
     </template>
 
-    <template id="qatar_invoices.report_invoice_with_copy">
+    <template id="haque_invoices.report_invoice_with_copy">
         <div class="article o_report_layout_standard position-relative letter-page" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
             <div class="row">
                 <section class="col-3 mr-4">
@@ -220,12 +220,12 @@
                     </p>
                 </section>
                 <section class="col-3 ml-4 mr-4">
-                    <t t-call="qatar_invoices.report_invoice_document" t-lang="lang">
+                    <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
                         <t t-set="modo" t-value="'Depositor\'s Copy'" />
                     </t>
                 </section>
                 <section class="col-3 ml-4">
-                    <t t-call="qatar_invoices.report_invoice_document" t-lang="lang">
+                    <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
                         <t t-set="modo" t-value="'Bank\'s Copy'" />
                     </t>
                 </section>
@@ -233,10 +233,10 @@
         </div>
     </template>
 
-    <!--     <template id="qatar_invoices.report_common" inherit_id="web.report_assets_common">
+    <!--     <template id="haque_invoices.report_common" inherit_id="web.report_assets_common">
         <xpath expr="." position="inside">
-            <link href="/qatar_invoices/static/src/css/qatar_invoice.css" rel="stylesheet" />
-            <script type="text/javascript" src="/qatar_invoices/static/src/js/NumeroALetras.js" />
+            <link href="/haque_invoices/static/src/css/haque_invoice.css" rel="stylesheet" />
+            <script type="text/javascript" src="/haque_invoices/static/src/js/NumeroALetras.js" />
         </xpath>
     </template> -->
 </odoo>

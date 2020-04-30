@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Qatar Invoices",
+    'name': "Haque Invoices",
 
     'summary': """ Allow you make honduras invoices """,
 
