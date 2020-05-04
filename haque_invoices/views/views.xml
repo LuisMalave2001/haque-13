@@ -10,6 +10,24 @@
             </group>
         </field>
     </record>
+
+    <record id="view_order_form_dates" model="ir.ui.view">
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <field name="payment_term_id" position="replace">
+                <label for="payment_term_id"/>
+                <div class="d-flex">
+                    <field name="payment_term_id" placeholder="Terms"/>
+                    <span class="o_form_label mx-3 oe_edit_only"> or </span>
+                    <field name="invoice_date_due" force_save="1" placeholder="Date" attrs="{'invisible': [('payment_term_id', '!=', False)]}"/>
+                </div>
+                <field name="invoice_date_invalid"/>
+                <field name="late_fee_amount"/>
+            </field>
+        </field>
+    </record>
+
 <!--     <record model="ir.ui.view" id="journal_honduras_form_view">
         <field name="name">journal.honduras</field>
         <field name="model">account.journal</field>

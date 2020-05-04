@@ -25,6 +25,7 @@
         'sale',
         'product',
         'account_reports',
+        'barcodes',
         'school_finance'
     ],
 
