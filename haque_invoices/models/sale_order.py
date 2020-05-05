@@ -20,12 +20,11 @@ class SaleOrderForStudents(models.Model):
     journal_id = fields.Many2one("account.journal", string="Journal", domain="[('type', '=', 'sale')]")
     def _create_invoices(self, grouped=False, final=False):
         all_moves = super()._create_invoices(grouped, final)
-        
-        all_moves.write({
-            "invoice_date_invalid": self.invoice_date_invalid,
-            "invoice_date_due": self.invoice_date_due,
-            "late_fee_amount": self.late_fee_amount,
-        })
-
+        for order in self:
+            order.invoice_ids.write({
+                "invoice_date_invalid": order.invoice_date_invalid,
+                "invoice_date_due": order.invoice_date_due,
+                "late_fee_amount": order.late_fee_amount,
+            })
         return all_moves
         
