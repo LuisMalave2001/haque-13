@@ -12,7 +12,7 @@ class tax_rates(models.Model):
     _name = 'pakistan_wht.tax_rate'
     _description = 'Pakistan withholding taxes rate'
 
-    tax_category_id = fields.Many2one("pakistan_wht.tax_category", string="Tax category", required=True)
+    tax_category_id = fields.Many2one("pakistan_wht.tax_category", string="Tax category")
     company_id = fields.Many2one("res.company", required=True)
     currency_id = fields.Many2one("res.currency", related="company_id.currency_id")
     status = fields.Selection(wht_dict, required=True, string='Status')
