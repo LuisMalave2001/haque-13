@@ -46,8 +46,8 @@ class ResPartnerIndustry(models.Model):
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    status_wht_id = fields.Selection(wht_dict, string='Status')
-    tax_category_id = fields.Many2one("pakistan_wht.tax_category", string="Tax category", required=True)
+    status_wht_id = fields.Selection(wht_dict, string='Withholding Status')
+    tax_category_id = fields.Many2one("pakistan_wht.tax_category", string="Tax category")
     tax_category_tax_rate_ids = fields.One2many(related="tax_category_id.tax_rate_ids")
 
     yearly_wht_forecast_amount = fields.Monetary()
