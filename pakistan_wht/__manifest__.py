@@ -13,7 +13,7 @@
     # Check https://github.com/odoo/odoo/blob/13.0/odoo/addons/base/data/ir_module_category_data.xml
     # for the full list
     'category': 'Taxes',
-    'version': '0.2',
+    'version': '0.2.1',
 
     # any module necessary for this one to work correctly
     'depends': [

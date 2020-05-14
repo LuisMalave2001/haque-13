@@ -53,7 +53,7 @@ odoo.define('pakistan_wht.popup', function(require) {
                     }).then(function(result) {
                         result.forEach(function(purchase) {
                             if (purchase.partner_yearly_wht_forecast_amount <= 0 && parseInt(purchase.exempt_upto) > 0 &&
-                                parseInt(purchase.exempt_upto_tax_percent) > 0 && purchase.acumulated_amount >= purchase.exempt_upto) {
+                                parseInt(purchase.exempt_upto_tax_percent) != 0 && purchase.acumulated_amount >= purchase.exempt_upto) {
                                 var msm = purchase.partner_id[1] + " should have taxes of " + purchase.exempt_upto_tax_percent + "%";
                                 Dialog.alert(self, msm, {
                                     title: "Vendor Taxes!"
