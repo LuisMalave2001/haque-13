@@ -2,6 +2,14 @@
     <template id="haque_invoices.report_invoice_document">
         <t t-set="o" t-value="o.with_context(lang=lang)" />
         <div class="page" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
+            <t t-if="o.late_fee_was_applied">
+                <t t-set="amount_untaxed" t-value="o.amount_untaxed - o.late_fee_amount" />
+                <t t-set="amount_total" t-value="o.amount_total - o.late_fee_amount" />
+            </t>
+            <t t-else="">
+                <t t-set="amount_untaxed" t-value="o.amount_untaxed" />
+                <t t-set="amount_total" t-value="o.amount_total" />
+            </t>
             <section class="row border border-dark">
                 <table class="w-100">
                     <tr>
@@ -21,7 +29,7 @@
                         <td>
                             <b>
                                 (Class
-                                <span t-field="o.student_id.homeroom" />
+                                <span t-field="o.student_id.grade_level_id" />
                                 )
                             </b>
                         </td>
@@ -41,7 +49,17 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Collection A/C: 0080-900184-01</td>
+                        <t t-set="main_account" t-value="False" />
+                        <t t-if="o.company_id.main_account">
+                            <t t-set="main_account" t-value="o.company_id.main_account" />
+                        </t>
+                        <t t-if="o.journal_id.main_account">
+                            <t t-set="main_account" t-value="o.journal_id.main_account" />
+                        </t>
+                        <td>
+                            Collection A/C:
+                            <t t-esc="main_account" />
+                        </td>
                     </tr>
                 </table>
             </section>
@@ -78,7 +96,12 @@
                     <tr>
                         <td>
                             <strong>
-                                <u>Monday, 2 March 2020</u>
+                                <t t-if="o.invoice_date_due">
+                                    <u>
+                                        <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                                    </u>
+                                </t>
+                                <!--                                 <u>Monday, 2 March 2020</u> -->
                             </strong>
                         </td>
                     </tr>
@@ -126,12 +149,15 @@
             <section class="row border border-dark">
                 <table class="w-100">
                     <tr>
-                        <td colspan="2">Fees of Mar 2020 through Mar 2020:</td>
+                        <td colspan="2">
+                            Fees of
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                        </td>
                     </tr>
                     <tr>
                         <td>TUITION FEE:</td>
                         <td>
-                            <span t-field="o.amount_untaxed" />
+                            <span t-esc="amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
                     </tr>
                     <tr>
@@ -144,55 +170,7 @@
                         <td>AMOUNT WITHIN DUE DATE:</td>
                         <td>
                             <div style="border-top: 3px solid black;">
-                                <span t-field="o.amount_total" />
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </section>
-            <section class="row border border-dark">
-                <table class="w-100">
-                    <tr>
-                        <td colspan="3">5% Advance Tax on CNIC</td>
-                    </tr>
-                    <tr>
-                        <td>
-                                42301-1046663-1
-                            </td>
-                        <td>
-                                Fee
-                            </td>
-                        <td>
-                                Tax
-                            </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Current Fee
-                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
-                        </td>
-                        <td>
-                            <span t-field="o.amount_untaxed" />
-                        </td>
-                        <td>
-                            <span t-field="o.amount_tax" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Accrued Fee July 2020</td>
-                    </tr>
-                    <tr>
-                        <td>Accrued Admission Fee</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <strong>
-                                <u>TOTAL ADVANCE TAX:</u>
-                            </strong>
-                        </td>
-                        <td colspan="2">
-                            <div class="border border-dark">
-                                <span t-field="o.amount_tax" />
+                                <span t-esc="amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                             </div>
                         </td>
                     </tr>
@@ -214,19 +192,80 @@
                         </td>
                         <td>
                             <div class="border border-dark">
-                                <t t-esc="o.amount_total + o.late_fee_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                                <t t-esc="amount_total + o.late_fee_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                             </div>
                         </td>
                     </tr>
                 </table>
             </section>
             <section class="row border border-dark">
-                <t t-esc="o.company_id.street" />
+                <table class="w-100">
+                    <tr>
+                        <td colspan="3">5% Advance Tax on CNIC</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <t t-esc="o.partner_id.vat" />
+                        </td>
+                        <td>
+                            <div class="text-center w-100">Fee</div>
+                        </td>
+                        <td>
+                            <div class="text-center w-100">Tax</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Current Fee
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                        </td>
+                        <td style="padding-left: 6px;padding-right: 6px;">
+                            <span t-esc="amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                        </td>
+                        <td style="padding-left: 6px;padding-right: 6px;">
+                            <span t-field="o.amount_tax" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                <u>TOTAL ADVANCE TAX:</u>
+                            </strong>
+                        </td>
+                        <td colspan="2">
+                            <div class="border border-dark">
+                                <span t-field="o.amount_tax" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <section class="row border border-dark">
+                <t t-set="deposit_account" t-value="False" />
+                <t t-if="o.company_id.deposit_account">
+                    <t t-set="deposit_account" t-value="o.company_id.deposit_account" />
+                </t>
+                <t t-if="o.journal_id.deposit_account">
+                    <t t-set="deposit_account" t-value="o.journal_id.deposit_account" />
+                </t>
+                <p class="text-center w-100">
+                    These funds are intended for
+                    <br />
+                    <strong t-field="o.company_id" />
+                    <br />
+                    A/C:
+                    <t t-esc="deposit_account" />
+                    <br />
+                    held with
+                    <t t-esc="o.company_id.street" />
+                </p>
             </section>
             <section class="row border border-dark text-center">
-                <t t-if="modo">
-                    <t t-esc="modo" />
-                </t>
+                <div class="text-center w-100">
+                    <t t-if="modo">
+                        <t t-esc="modo" />
+                    </t>
+                </div>
             </section>
         </div>
     </template>
@@ -234,6 +273,12 @@
     <template id="haque_invoices.report_invoice_with_copy">
         <div class="article o_report_layout_standard position-relative" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
             <t t-set="o" t-value="o.with_context(lang=lang)" />
+            <style>
+                .invoice-page{
+                    width: 32%;
+                    margin-left: 1.5cm;
+                }
+            </style>
             <div class="row">
                 <section class="col-3">
                     <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="width: 256px;" alt="Logo" />
@@ -289,13 +334,13 @@
                     </p>
                 </section>
                 <!--                 <div style="flex: 0 0 12.5%; max-width: 12.5%;"/> -->
-                <section class="col-3" style="margin-left: 12.5%">
+                <section class="invoice-page">
                     <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
                         <t t-set="modo" t-value="'Depositor\'s Copy'" />
                     </t>
                 </section>
                 <!--                 <div style="flex: 0 0 12.5%; max-width: 12.5%;"/> -->
-                <section class="col-3" style="margin-left: 12.5%">
+                <section class="invoice-page">
                     <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
                         <t t-set="modo" t-value="'Bank\'s Copy'" />
                     </t>

@@ -32,6 +32,7 @@
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',
+        'data/automated_actions.xml',
         'views/reports.xml',
         'views/views.xml',
         'views/templates.xml',
