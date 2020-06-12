@@ -32,6 +32,7 @@ class SaleOrder(models.Model):
                 discount_applicable = discount_ids.filtered(
                     lambda discount: discount.category_id in invoice_line_categories)
 
+                _logger.info(invoice_line_categories)
                 _logger.info(discount_applicable)
                 for discount in discount_applicable:
                     percent = discount.percent
