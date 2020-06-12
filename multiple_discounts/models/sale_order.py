@@ -28,7 +28,7 @@ class SaleOrder(models.Model):
 
             for order_line_id in order_id.order_line:
                 _logger.info(order_line_id)
-                _logger.info(partner_id)
+                _logger.info(order_id.partner_id)
                 _logger.info(discount_ids)
                 invoice_line_categories = get_parent_category(order_line_id.product_id.categ_id)
                 discount_applicable = discount_ids.filtered(
@@ -61,10 +61,6 @@ class SaleOrder(models.Model):
         order_ids = super().create(vals)
 
         # We add the discounts here if context's apply_discounts variable is set True
-        for order_id in order_ids:
-
-            # 2020/06/12: We don't do it due we want to be applied every time
-            #  if self._context.get("apply_discounts", False):
-            order_id.apply_discount()
+        order_ids.apply_discount()
 
         return order_ids
