@@ -28,6 +28,8 @@ class SaleOrder(models.Model):
 
             for order_line_id in order_id.order_line:
                 _logger.info(order_line_id)
+                _logger.info(partner_id)
+                _logger.info(discount_ids)
                 invoice_line_categories = get_parent_category(order_line_id.product_id.categ_id)
                 discount_applicable = discount_ids.filtered(
                     lambda discount: discount.category_id in invoice_line_categories)
