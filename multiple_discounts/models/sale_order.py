@@ -20,22 +20,19 @@ class SaleOrder(models.Model):
 
     def apply_discount(self):
 
-        _logger.info("Applying discounts to orders")
-
         for order_id in self:
             write_lines = []
-            discount_ids = order_id.partner_id.discount_ids
+            partner_id = order_id.student_id if order_id.student_id else order_id.partner_id
+            discount_ids = partner_id.discount_ids
 
             for order_line_id in order_id.order_line:
-                _logger.info(order_line_id)
-                _logger.info(order_id.partner_id)
-                _logger.info(discount_ids)
+
+                # If there is a student, our priority is the student
+
                 invoice_line_categories = get_parent_category(order_line_id.product_id.categ_id)
                 discount_applicable = discount_ids.filtered(
                     lambda discount: discount.category_id in invoice_line_categories)
 
-                _logger.info(invoice_line_categories)
-                _logger.info(discount_applicable)
                 for discount in discount_applicable:
                     percent = discount.percent
                     discount_count = -order_line_id.price_subtotal * (percent/100)
