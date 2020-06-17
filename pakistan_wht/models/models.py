@@ -47,6 +47,7 @@ class ResPartner(models.Model):
     _inherit = "res.partner"
 
     status_wht_id = fields.Selection(wht_dict, string='Withholding Status')
+    sale_status_wht_id = fields.Selection(wht_dict, string='Withholding Status (Sale)')
     tax_category_id = fields.Many2one("pakistan_wht.tax_category", string="Tax category")
     tax_category_tax_rate_ids = fields.One2many(related="tax_category_id.tax_rate_ids")
 
