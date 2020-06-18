@@ -11,6 +11,7 @@
                         <field name="allowance_ids" nolabel="1" context="{'default_type': 'allowance'}">
                             <tree editable="bottom">
                                 <field name="type" invisible="1"/>
+                                <field name="name"/>
                                 <field name="amount"/>
                             </tree>
                         </field>
@@ -19,6 +20,7 @@
                         <field name="other_allowance_ids" nolabel="1" context="{'default_type': 'allowance'}">
                             <tree editable="bottom">
                                 <field name="type" invisible="1"/>
+                                <field name="name"/>
                                 <field name="date" required="1" attrs="{'readonly': [('is_locked','=',True)]}"/>
                                 <field name="amount" attrs="{'readonly': [('is_locked','=',True)]}"/>
                                 <field name="is_locked"/>
@@ -31,6 +33,7 @@
                         <field name="deduction_ids" nolabel="1" context="{'default_type': 'deduction'}">
                             <tree editable="bottom">
                                 <field name="type" invisible="1"/>
+                                <field name="name"/>
                                 <field name="amount"/>
                             </tree>
                         </field>
@@ -39,6 +42,7 @@
                         <field name="other_deduction_ids" nolabel="1" context="{'default_type': 'deduction'}">
                             <tree editable="bottom">
                                 <field name="type" invisible="1"/>
+                                <field name="name"/>
                                 <field name="date" required="1" attrs="{'readonly': [('is_locked','=',True)]}"/>
                                 <field name="amount" attrs="{'readonly': [('is_locked','=',True)]}"/>
                                 <field name="is_locked"/>
