@@ -7,7 +7,7 @@ class ResCompany(models.Model):
 
     so_tax_exempt = fields.Boolean(string="SO Tax Exemption",
         default=False,
-        help="Check to enable removing of taxes if SO untaxed amount is less than or equal a specific amount")
+        help="Check to enable removing of taxes for an SO if forecasted year total is less than or equal a specified yearly amount")
     so_tax_exempt_amount = fields.Monetary(string="SO Tax Exemption Amount",
-        default=10000,
-        help="Taxes are removed if SO untaxed amount is less than or equal this amount")
+        default=200000,
+        help="Taxes are removed for an SO if the forecasted year total is less or equal than this amount")
