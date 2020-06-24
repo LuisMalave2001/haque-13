@@ -25,6 +25,9 @@ class SaleOrder(models.Model):
             remaining_months = (fiscalyear_end.year - today.year) * 12 + (fiscalyear_end.month - today.month + 1)
             forecasted_amount = total_invoiced_amount + remaining_months * sale.amount_untaxed
             if sale.company_id.so_tax_exempt and forecasted_amount <= sale.company_id.so_tax_exempt_amount:
+                amount_untaxed = 0.0
                 for line in sale.order_line:
                     line.tax_id = [(5, 0 ,0)]
-                sale._amount_all()
+                    amount_untaxed += line.price_subtotal
+                sale.amount_tax = 0.0
+                sale.amount_total = amount_untaxed
