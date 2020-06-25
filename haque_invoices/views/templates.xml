@@ -5,15 +5,15 @@
             <t t-set="late_fee_product" t-value="o.env.ref('haque_invoices.late_fee_product')" />
             <t t-set="late_fee_line" t-value="o.invoice_line_ids.filtered(lambda l: l.product_id.id == late_fee_product.product_variant_id.id)" />
             <t t-if="late_fee_line">
-                <t t-set="advance_total" t-value="o.amount_total - late_fee_total" />
-                <t t-set="advance_untaxed" t-value="o.amount_untaxed - late_fee_untaxed" />
                 <t t-set="late_fee_total" t-value="late_fee_line.price_total" />
+                <t t-set="advance_total" t-value="o.amount_total - late_fee_total" />
+                <t t-set="advance_untaxed" t-value="o.amount_untaxed - late_fee_line.price_subtotal" />
                 <t t-set="late_total" t-value="o.amount_total" />
             </t>
             <t t-else="">
+                <t t-set="late_fee_total" t-value="o.late_fee_amount * (1 + sum(late_fee_product.taxes_id.mapped('amount'))/100)"/>
                 <t t-set="advance_total" t-value="o.amount_total" />
                 <t t-set="advance_untaxed" t-value="o.amount_untaxed" />
-                <t t-set="late_fee_total" t-value="o.late_fee_amount * (1 + sum(late_fee_product.taxes_id.mapped('amount'))/100)"/>
                 <t t-set="late_total" t-value="advance_total + late_fee_total" />
             </t>
             <t t-set="advance_tax" t-value="advance_total - advance_untaxed" />
