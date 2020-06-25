@@ -80,7 +80,8 @@ class Invoice(models.Model):
                     "product_id": late_fee_product_id. get_single_product_variant().get("product_id", False),
                     "price_unit": invoice.late_fee_amount,
                     "account_id": late_fee_monthly_account_id.id,
-                    "quantity": 1
+                    "quantity": 1,
+                    "tax_ids": late_fee_product_id.taxes_id.ids,
                 })],
                 "late_fee_was_applied": True
             })

@@ -2,14 +2,21 @@
     <template id="haque_invoices.report_invoice_document">
         <t t-set="o" t-value="o.with_context(lang=lang)" />
         <div class="page" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
-            <t t-if="o.late_fee_was_applied">
-                <t t-set="amount_untaxed" t-value="o.amount_untaxed - o.late_fee_amount" />
-                <t t-set="amount_total" t-value="o.amount_total - o.late_fee_amount" />
+            <t t-set="late_fee_product" t-value="o.env.ref('haque_invoices.late_fee_product')" />
+            <t t-set="late_fee_line" t-value="o.invoice_line_ids.filtered(lambda l: l.product_id.id == late_fee_product.product_variant_id.id)" />
+            <t t-if="late_fee_line">
+                <t t-set="advance_total" t-value="o.amount_total - late_fee_total" />
+                <t t-set="advance_untaxed" t-value="o.amount_untaxed - late_fee_untaxed" />
+                <t t-set="late_fee_total" t-value="late_fee_line.price_total" />
+                <t t-set="late_total" t-value="o.amount_total" />
             </t>
             <t t-else="">
-                <t t-set="amount_untaxed" t-value="o.amount_untaxed" />
-                <t t-set="amount_total" t-value="o.amount_total" />
+                <t t-set="advance_total" t-value="o.amount_total" />
+                <t t-set="advance_untaxed" t-value="o.amount_untaxed" />
+                <t t-set="late_fee_total" t-value="o.late_fee_amount * (1 + sum(late_fee_product.taxes_id.mapped('amount'))/100)"/>
+                <t t-set="late_total" t-value="advance_total + late_fee_total" />
             </t>
+            <t t-set="advance_tax" t-value="advance_total - advance_untaxed" />
             <section class="row border border-dark">
                 <table class="w-100">
                     <tr>
@@ -157,20 +164,20 @@
                     <tr>
                         <td>TUITION FEE:</td>
                         <td>
-                            <span t-esc="amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                            <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
                     </tr>
                     <tr>
                         <td>TOTAL ADVANCE TAX</td>
                         <td>
-                            <span t-field="o.amount_tax" />
+                            <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
                     </tr>
                     <tr>
                         <td>AMOUNT WITHIN DUE DATE:</td>
                         <td>
                             <div style="border-top: 3px solid black;">
-                                <span t-esc="amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                                <span t-esc="advance_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                             </div>
                         </td>
                     </tr>
@@ -181,7 +188,7 @@
                     <tr>
                         <td>LATE FEE WITH TAX:</td>
                         <td>
-                            <span t-field="o.late_fee_amount" />
+                            <span t-esc="late_fee_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
                     </tr>
                     <tr>
@@ -192,7 +199,7 @@
                         </td>
                         <td>
                             <div class="border border-dark">
-                                <t t-esc="amount_total + o.late_fee_amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                                <t t-esc="late_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                             </div>
                         </td>
                     </tr>
@@ -220,10 +227,10 @@
                             <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
                         </td>
                         <td style="padding-left: 6px;padding-right: 6px;">
-                            <span t-esc="amount_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                            <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
                         <td style="padding-left: 6px;padding-right: 6px;">
-                            <span t-field="o.amount_tax" />
+                            <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
                     </tr>
                     <tr>
@@ -234,7 +241,7 @@
                         </td>
                         <td colspan="2">
                             <div class="border border-dark">
-                                <span t-field="o.amount_tax" />
+                                <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                             </div>
                         </td>
                     </tr>
