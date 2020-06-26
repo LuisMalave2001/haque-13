@@ -23,6 +23,12 @@ class SaleOrderForStudents(models.Model):
     student_id = fields.Many2one("res.partner", string="Student", domain=[('person_type', '=', 'student')])
     family_id = fields.Many2one("res.partner", string="Family", domain=[('is_family', '=', True)])
 
+    def _prepare_invoice(self):
+        self.ensure_one()
+        invoice_vals = super(SaleOrderForStudents, self)._prepare_invoice()
+        if self.invoice_date:
+            invoice_vals["invoice_date"] = self.invoice_date
+        return invoice_vals
 
     def _create_invoices(self, grouped=False, final=False):
 
