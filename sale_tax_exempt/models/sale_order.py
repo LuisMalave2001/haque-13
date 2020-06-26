@@ -20,7 +20,7 @@ class SaleOrder(models.Model):
             fiscalyear_start = fiscalyear_end + relativedelta(years=-1, days=1)
             covered_invoices = self.env["account.move"].search([
                 ("partner_id","=",sale.partner_id.id),
-                ("type","=","out_invoice"),
+                ("type","in",["out_invoice","out_refund"]),
                 ("state","in",["draft","posted"]),
                 ("invoice_date",">=",fiscalyear_start),
                 ("invoice_date","<=",fiscalyear_end),
@@ -29,9 +29,13 @@ class SaleOrder(models.Model):
             remaining_months = (fiscalyear_end.year - invoice_date.year) * 12 + (fiscalyear_end.month - invoice_date.month + 1)
             forecasted_amount = total_invoiced_amount + remaining_months * sale.amount_untaxed
             if sale.company_id.so_tax_exempt and forecasted_amount <= sale.company_id.so_tax_exempt_amount:
-                amount_untaxed = 0.0
                 for line in sale.order_line:
                     line.tax_id = [(5, 0 ,0)]
-                    amount_untaxed += line.price_subtotal
-                sale.amount_tax = 0.0
-                sale.amount_total = amount_untaxed
+            else:
+                sale._compute_tax_id()
+            amount_untaxed = amount_tax = 0.0
+            for line in sale.order_line:
+                amount_untaxed += line.price_subtotal
+                amount_tax += line.price_tax
+            sale.amount_tax = amount_tax
+            sale.amount_total = amount_untaxed + amount_tax
