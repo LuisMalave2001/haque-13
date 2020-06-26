@@ -18,5 +18,6 @@
 
     'data': [
         'views/res_config_settings_views.xml',
+        'data/base_automation_data.xml',
     ],
 }
