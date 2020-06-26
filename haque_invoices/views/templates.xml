@@ -11,12 +11,13 @@
                 <t t-set="late_total" t-value="o.amount_total" />
             </t>
             <t t-else="">
-                <t t-set="late_fee_total" t-value="o.late_fee_amount * (1 + sum(late_fee_product.taxes_id.mapped('amount'))/100)"/>
+                <t t-set="late_fee_total" t-value="o.late_fee_amount * (1 + sum(late_fee_product.taxes_id.mapped('amount'))/100) if o.amount_tax else o.late_fee_amount"/>
                 <t t-set="advance_total" t-value="o.amount_total" />
                 <t t-set="advance_untaxed" t-value="o.amount_untaxed" />
                 <t t-set="late_total" t-value="advance_total + late_fee_total" />
             </t>
             <t t-set="advance_tax" t-value="advance_total - advance_untaxed" />
+            <t t-set="late_fee_has_tax" t-value="late_fee_line.tax_ids if late_fee_line else o.amount_tax"/>
             <section class="row border border-dark">
                 <table class="w-100">
                     <tr>
@@ -122,7 +123,7 @@
                 </div>
                 <div class="col-4">
                     CLASS:
-                    <span t-field="o.student_id.homeroom" />
+                    <span t-field="o.student_id.grade_level_id.name" />
                 </div>
             </section>
             <section class="row border border-dark">
@@ -186,7 +187,7 @@
             <section class="row border border-dark">
                 <table class="w-100">
                     <tr>
-                        <td>LATE FEE WITH TAX:</td>
+                        <td>LATE FEE<t t-if="late_fee_has_tax"> WITH TAX</t>:</td>
                         <td>
                             <span t-esc="late_fee_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
