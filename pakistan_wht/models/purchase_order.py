@@ -72,9 +72,18 @@ class PurchaseOrderForStudents(models.Model):
             company_id = self.env["res.company"].browse(self._context.get("allowed_company_ids"))
             fiscal_year_range = company_id.compute_fiscalyear_dates( datetime.now())
 
-            all_partner_purchase = self.env["purchase.order"].search([("partner_id", "=", purchase.partner_id.id), ("company_id", "=", company_id.id)]).filtered(
-                lambda self: fiscal_year_range["date_from"] < self.date_order < fiscal_year_range["date_to"])
-            amount_purchases_sum = sum([record.amount_total for record in all_partner_purchase])
+            # all_partner_purchase = self.env["purchase.order"].search([("partner_id", "=", purchase.partner_id.id), ("company_id", "=", company_id.id)]).filtered(
+            #     lambda self: fiscal_year_range["date_from"] < self.date_order < fiscal_year_range["date_to"])
+            all_partner_bills = self.env["account.move"].search([
+                ("type","in",["in_invoice","in_refund"]),
+                ("partner_id","=",purchase.partner_id.id),
+                ("state","in",["draft","posted"]),
+                ("invoice_date",">=",fiscal_year_range["date_from"]),
+                ("invoice_date","<=",fiscal_year_range["date_to"]),
+                ("company_id","=",company_id.id),
+            ])
+            
+            amount_purchases_sum = -sum([record.amount_untaxed_signed for record in all_partner_bills]) + purchase.amount_untaxed
             purchase.acumulated_amount = amount_purchases_sum
 
     @api.model
@@ -90,10 +99,10 @@ class PurchaseOrderForStudents(models.Model):
 
             amount_to_compare = amount_purchases_sum
             yearly_wht_forecast_amount = purchase.partner_id.yearly_wht_forecast_amount
-            if yearly_wht_forecast_amount > 0:
+            if yearly_wht_forecast_amount > amount_to_compare:
                 amount_to_compare = yearly_wht_forecast_amount
 
-            if tax_rate_ids:
+            if tax_rate_ids and amount_to_compare:
                 tax_id = False
                 for tax_aux_id in tax_rate_ids:
                     if amount_to_compare < tax_aux_id.exempt_upto:
@@ -102,7 +111,6 @@ class PurchaseOrderForStudents(models.Model):
                         tax_id = tax_aux_id
 
                 if tax_id:
-                    if yearly_wht_forecast_amount > 0:
                         purchase.order_line.write(
                             {"taxes_id": [(4, tax_id.tax_id.id, 0)]})
 
@@ -120,10 +128,10 @@ class PurchaseOrderForStudents(models.Model):
 
             amount_to_compare = amount_purchases_sum
             yearly_wht_forecast_amount = purchase.partner_id.yearly_wht_forecast_amount
-            if yearly_wht_forecast_amount > 0:
+            if yearly_wht_forecast_amount > amount_to_compare:
                 amount_to_compare = yearly_wht_forecast_amount
 
-            if tax_rate_ids:
+            if tax_rate_ids and amount_to_compare:
                 tax_id = False
                 for tax_aux_id in tax_rate_ids:
                     if amount_to_compare < tax_aux_id.exempt_upto:
@@ -132,7 +140,6 @@ class PurchaseOrderForStudents(models.Model):
                         tax_id = tax_aux_id
 
                 if tax_id:
-                    if yearly_wht_forecast_amount > 0:
                         purchase.order_line.write(
                             {"taxes_id": [(4, tax_id.tax_id.id, 0)]})
 #                        raise Warning("Message")
