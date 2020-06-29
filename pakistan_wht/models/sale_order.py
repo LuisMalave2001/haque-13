@@ -8,7 +8,7 @@ class SaleOrder(models.Model):
     @api.constrains("partner_id")
     def check_partner_tax_exempt(self):
         for sale in self:
-            if sale.partner_id.sale_status_wht_id == "filler":
+            if sale.partner_id.sale_status_wht_id == [False, "filler"]:
                 for line in sale.order_line:
                     line.tax_id = [(5, 0, 0)]
                 sale._amount_all()

@@ -8,5 +8,5 @@ class SaleOrderLine(models.Model):
     def _compute_tax_id(self):
         super(SaleOrderLine, self)._compute_tax_id()
         for line in self:
-            if line.order_id.partner_id.sale_status_wht_id == "filler":
+            if line.order_id.partner_id.sale_status_wht_id in [False, "filler"]:
                 line.tax_id = [(5, 0, 0)]

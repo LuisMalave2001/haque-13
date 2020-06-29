@@ -31,6 +31,16 @@ class SaleOrderForStudents(models.Model):
         return invoice_vals
 
     def _create_invoices(self, grouped=False, final=False):
+        for order in self:
+            if order.state not in ["sale", "done"]:
+                raise UserError(_("Cannot create an invoice for %s because it is not confirmed.") % (order.name))
+            lines_to_invoice = 0
+            for line in order.order_line:
+                if line.qty_to_invoice > 0 or (line.qty_to_invoice < 0 and final):
+                    lines_to_invoice += 1
+            if lines_to_invoice == 0 and order.invoice_ids:
+                raise UserError(_("%s already has Invoice/s: %s. No new invoices created.") % (
+                    order.name, ", ".join(order.invoice_ids.mapped("display_name"))))
 
         all_moves = super()._create_invoices(grouped, final)
 
