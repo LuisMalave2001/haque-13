@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="filter_info_template" inherit_id="account_reports.filter_info_template">
+        <xpath expr="//t[@t-esc='res_partner_value']/../.." position="replace">
+            <div class="col-12">
+                <t t-if="options.get('accounts') != None">
+                    Accounts:
+                    <t t-set="account_value" t-value="'All'"/>
+                    <t t-foreach="options['selected_account_names']" t-as="account_name">
+                        <t t-set="account_value" t-value="''"/>
+                        <t t-esc="account_name"/>
+                    </t>
+                    <t t-esc="account_value"/>
+                </t>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-esc='analytic_account_value']/../.." position="before">
+            <div class="col-12">
+                <t t-if="options.get('partner_ids') != None">
+                    <t t-set="account_types" t-value="options.get('account_type') and [type['id'] for type in options['account_type'] if type['selected']] or []"/>
+                    <t t-set="type_label_mapping" t-value="{'receivable': 'Customers', 'payable': 'Vendors'}"/>
+                    <t t-set="partner_label" t-value="type_label_mapping.get(account_types[0], False) if len(account_types) == 1 else False"/>
+                    <t t-esc="partner_label or 'Partners'"/>:
+                    <t t-set="res_partner_value" t-value="'All'"/>
+                    <t t-foreach="options['selected_partner_ids']" t-as="partner_name">
+                        <t t-set="res_partner_value" t-value="''"/>
+                        <t t-esc="partner_name"/>
+                    </t>
+                    <t t-esc="res_partner_value"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+</odoo>
