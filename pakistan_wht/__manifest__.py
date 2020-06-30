@@ -19,6 +19,7 @@
     'depends': [
         'base',
         'purchase',
+        'sale',
     ],
 
     # always loaded

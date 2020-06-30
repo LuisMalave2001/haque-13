@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="base_automation_check_tax_exempt" model="base.automation">
+        <field name="name">Invoice: Check Tax Exempt</field>
+        <field name="model_id" ref="model_account_move"/>
+        <field name="trigger">on_create_or_write</field>
+        <field name="trigger_field_ids" eval="[(6,0,[ref('account.field_account_move__amount_untaxed'),ref('account.field_account_move__invoice_date')])]"/>
+        <field name="filter_pre_domain">[('type','=','out_invoice')]</field>
+        <field name="state">code</field>
+        <field name="code">record.check_invoice_tax_exempt()</field>
+    </record>
+</odoo>

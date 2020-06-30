@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import models, fields, api, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 
@@ -12,33 +14,26 @@ _logger = logging.getLogger(__name__)
 class Invoice(models.Model):
     _inherit = "account.move"
 
-    invoice_date_invalid = fields.Date("Invalid Date")
-    late_fee_amount = fields.Monetary()
+    invoice_date_invalid = fields.Date(string="Invalid Date",
+        compute="_compute_invoice_date_invalid",
+        store=True,
+        readonly=False)
+    late_fee_amount = fields.Monetary(string="Late Fee Amount",
+        compute="_compute_late_fee_amount")
     late_fee_was_applied = fields.Boolean(default=False)
+    
+    def _compute_late_fee_amount(self):
+        for move in self:
+            move.late_fee_amount = move.journal_id.late_fee_amount_default or \
+                                   move.company_id.late_fee_amount_default or 0.0
 
-    @api.model
-    def _default_late_fee_amount(self):
-        company_late_fee = self.company_id.late_fee_amount_default
-        journal_late_fee = self.journal_id.late_fee_amount_default
-
-        return journal_late_fee if journal_late_fee else company_late_fee
-
-    @api.model
-    def create(self, vals):
-        vals["late_fee_was_applied"] = False
-        record_ids = super(Invoice, self).create(vals)
-        for record in record_ids:
-
-            company_late_fee = record.company_id.late_fee_amount_default
-            journal_late_fee = record.journal_id.late_fee_amount_default
-
-            late_fee = journal_late_fee if journal_late_fee else company_late_fee
-
-            record.write({
-                "late_fee_amount": late_fee
-            })
-
-        return record_ids
+    @api.depends("invoice_date_due")
+    def _compute_invoice_date_invalid(self):
+        for invoice in self:
+            result = False
+            if invoice.invoice_date_due:
+                result = invoice.invoice_date_due + relativedelta(weeks=1)
+            invoice.invoice_date_invalid = result
 
     def cron_include_late_fees(self):
         now_date = datetime.now().date()
@@ -80,7 +75,8 @@ class Invoice(models.Model):
                     "product_id": late_fee_product_id. get_single_product_variant().get("product_id", False),
                     "price_unit": invoice.late_fee_amount,
                     "account_id": late_fee_monthly_account_id.id,
-                    "quantity": 1
+                    "quantity": 1,
+                    "tax_ids": late_fee_product_id.taxes_id.ids,
                 })],
                 "late_fee_was_applied": True
             })

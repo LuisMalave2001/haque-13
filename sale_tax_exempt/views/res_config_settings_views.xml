@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit_sale" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.sale</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='group_auto_done_setting']/../.." position="after">
+                <div class="col-12 col-lg-6 o_setting_box">
+                    <div class="o_setting_left_pane">
+                        <field name="so_tax_exempt"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="so_tax_exempt"/>
+                        <span class="fa fa-lg fa-building-o" title="Values set here are company-specific." aria-label="Values set here are company-specific." groups="base.group_multi_company" role="img"/>
+                        <div class="text-muted">
+                            Remove taxes for an SO when forecasted year total is less than or equal a specific amount
+                        </div>
+                        <div class="content-group" attrs="{'invisible': [('so_tax_exempt', '=', False)]}">
+                            <div class="row mt16">
+                                <label for="so_tax_exempt_amount" class="col-lg-4 o_light_label" string="Exempt Amount"/>
+                                <field name="so_tax_exempt_amount"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>
