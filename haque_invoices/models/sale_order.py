@@ -15,7 +15,7 @@ class SaleOrderForStudents(models.Model):
     _inherit = "sale.order"
 
     invoice_date_due = fields.Date()
-    invoice_date_invalid = fields.Date(string="Invoice Date Invalid"
+    invoice_date_invalid = fields.Date(string="Invoice Date Invalid",
         compute="_compute_invoice_date_invalid",
         store=True,
         readonly=False)
