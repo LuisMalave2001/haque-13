@@ -8,6 +8,7 @@
                 <field name="sequence" widget='handle'/>
                 <field name="name"/>
                 <field name="school_code_id"/>
+                <field name="district_code_id" readonly="1"/>
             </tree>
         </field>
     </record>
@@ -19,6 +20,7 @@
             <tree editable="bottom">
                 <field name="sequence" widget='handle'/>
                 <field name="name"/>
+                <field name="district_code_id"/>
             </tree>
         </field>
     </record>
@@ -31,6 +33,7 @@
                 <field name="sequence" widget='handle'/>
                 <field name="name"/>
                 <field name="school_code_id"/>
+                <field name="district_code_id" readonly="1"/>
             </tree>
         </field>
     </record>
@@ -42,7 +45,6 @@
             <tree editable="bottom">
                 <field name="sequence" widget='handle'/>
                 <field name="name"/>
-                <field name="school_code_ids"/>
             </tree>
         </field>
     </record>

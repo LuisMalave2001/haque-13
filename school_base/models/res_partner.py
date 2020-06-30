@@ -31,6 +31,8 @@ class Contact(models.Model):
 
     facts_id_int = fields.Integer("Fact id (Integer)")
     facts_id = fields.Char("Fact id")
+    facts_approved = fields.Boolean()
+
 
     is_family = fields.Boolean("Is a family?")
     
