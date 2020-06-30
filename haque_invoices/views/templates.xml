@@ -1,0 +1,366 @@
+<odoo>
+    <template id="haque_invoices.report_invoice_document">
+        <t t-set="o" t-value="o.with_context(lang=lang)" />
+        <div class="page" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
+            <t t-set="late_fee_product" t-value="o.env.ref('haque_invoices.late_fee_product')" />
+            <t t-set="late_fee_line" t-value="o.invoice_line_ids.filtered(lambda l: l.product_id.id == late_fee_product.product_variant_id.id)" />
+            <t t-if="late_fee_line">
+                <t t-set="late_fee_total" t-value="late_fee_line.price_total" />
+                <t t-set="advance_total" t-value="o.amount_total - late_fee_total" />
+                <t t-set="advance_untaxed" t-value="o.amount_untaxed - late_fee_line.price_subtotal" />
+                <t t-set="late_total" t-value="o.amount_total" />
+            </t>
+            <t t-else="">
+                <t t-set="late_fee_total" t-value="o.late_fee_amount * (1 + sum(late_fee_product.taxes_id.mapped('amount'))/100) if o.amount_tax else o.late_fee_amount"/>
+                <t t-set="advance_total" t-value="o.amount_total" />
+                <t t-set="advance_untaxed" t-value="o.amount_untaxed" />
+                <t t-set="late_total" t-value="advance_total + late_fee_total" />
+            </t>
+            <t t-set="advance_tax" t-value="advance_total - advance_untaxed" />
+            <t t-set="late_fee_has_tax" t-value="late_fee_line.tax_ids if late_fee_line else o.amount_tax"/>
+            <section class="row border border-dark">
+                <table class="w-100">
+                    <tr>
+                        <td>
+                            <b t-field="o.partner_id" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>
+                                F/O
+                                <span t-field="o.student_id" />
+                            </b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>
+                                (Class
+                                <span t-field="o.student_id.grade_level_id" />
+                                )
+                            </b>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <section class="row border border-dark text-center">
+                <table class="w-100">
+                    <tr>
+                        <td>
+                            <span t-field="o.company_id" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Bank AL Habib Limited - All Branches</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <t t-set="main_account" t-value="False" />
+                        <t t-if="o.company_id.main_account">
+                            <t t-set="main_account" t-value="o.company_id.main_account" />
+                        </t>
+                        <t t-if="o.journal_id.main_account">
+                            <t t-set="main_account" t-value="o.journal_id.main_account" />
+                        </t>
+                        <td>
+                            Collection A/C:
+                            <t t-esc="main_account" />
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <section class="row border border-dark">
+                <table class="w-100 text-center">
+                    <tr>
+                        <td class="pl-1 pr-1">
+                            <img style="z-index: -1;" t-att-src="'/report/barcode/Codabar/%s' % o.name " class="w-100 pt-2 pb-2" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                Voucher No.:
+                                <span t-field="o.name" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                ID No.:
+                                <span t-field="o.student_id.facts_id" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                <u>LATE FEE EFFECTIVE AFTER</u>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                <t t-if="o.invoice_date_due">
+                                    <u>
+                                        <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                                    </u>
+                                </t>
+                                <!--                                 <u>Monday, 2 March 2020</u> -->
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <section class="row border border-dark">
+                <div class="col-8">
+                    STUDENT NAME:
+                    <br />
+                    <span t-field="o.student_id" />
+                </div>
+                <div class="col-4">
+                    CLASS:
+                    <span t-field="o.student_id.grade_level_id.name" />
+                </div>
+            </section>
+            <section class="row border border-dark">
+                <table class="w-100">
+                    <tr>
+                        <td>LATE FEE EFFECTIVE AFTER:</td>
+                        <td>
+                            <t t-if="o.invoice_date_due">
+                                <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>CHALLAN INVALID AFTER:</td>
+                        <td>
+                            <t t-if="o.invoice_date_invalid">
+                                <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_invalid)" />
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>ISSUE DATE:</td>
+                        <td>
+                            <t t-if="o.invoice_date">
+                                <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <section class="row border border-dark">
+                <table class="w-100">
+                    <tr>
+                        <td colspan="2">
+                            Fees of
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>TUITION FEE:</td>
+                        <td>
+                            <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>TOTAL ADVANCE TAX</td>
+                        <td>
+                            <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>AMOUNT WITHIN DUE DATE:</td>
+                        <td>
+                            <div style="border-top: 3px solid black;">
+                                <span t-esc="advance_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <section class="row border border-dark">
+                <table class="w-100">
+                    <tr>
+                        <td>LATE FEE<t t-if="late_fee_has_tax"> WITH TAX</t>:</td>
+                        <td>
+                            <span t-esc="late_fee_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <u>
+                                <strong>AMOUNT WITH LATE FEE:</strong>
+                            </u>
+                        </td>
+                        <td>
+                            <div class="border border-dark">
+                                <t t-esc="late_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <section class="row border border-dark">
+                <table class="w-100">
+                    <tr t-if="o.partner_id.sale_status_wht_id not in [False, 'filler']">
+                        <td colspan="3">5% Advance Tax on CNIC</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <t t-if="o.partner_id.sale_status_wht_id not in [False, 'filler']" t-esc="o.partner_id.vat" />
+                        </td>
+                        <td>
+                            <div class="text-center w-100">Fee</div>
+                        </td>
+                        <td>
+                            <div class="text-center w-100">Tax</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Current Fee
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                        </td>
+                        <td style="padding-left: 6px;padding-right: 6px;">
+                            <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                        </td>
+                        <td style="padding-left: 6px;padding-right: 6px;">
+                            <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                <u>TOTAL ADVANCE TAX:</u>
+                            </strong>
+                        </td>
+                        <td colspan="2">
+                            <div class="border border-dark">
+                                <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </section>
+            <section class="row border border-dark">
+                <t t-set="deposit_account" t-value="False" />
+                <t t-if="o.company_id.deposit_account">
+                    <t t-set="deposit_account" t-value="o.company_id.deposit_account" />
+                </t>
+                <t t-if="o.journal_id.deposit_account">
+                    <t t-set="deposit_account" t-value="o.journal_id.deposit_account" />
+                </t>
+                <p class="text-center w-100">
+                    These funds are intended for
+                    <br />
+                    <strong t-field="o.company_id" />
+                    <br />
+                    A/C:
+                    <t t-esc="deposit_account" />
+                    <br />
+                    held with
+                    <t t-esc="o.company_id.street" />
+                </p>
+            </section>
+            <section class="row border border-dark text-center">
+                <div class="text-center w-100">
+                    <t t-if="modo">
+                        <t t-esc="modo" />
+                    </t>
+                </div>
+            </section>
+        </div>
+    </template>
+
+    <template id="haque_invoices.report_invoice_with_copy">
+        <div class="article o_report_layout_standard position-relative" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
+            <t t-set="o" t-value="o.with_context(lang=lang)" />
+            <style>
+                .invoice-page{
+                    width: 32%;
+                    margin-left: 1.5cm;
+                }
+            </style>
+            <div class="row">
+                <section class="col-3">
+                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="width: 256px;" alt="Logo" />
+                    <p>
+                        <t t-if="o.invoice_date">
+                            <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
+                        </t>
+                    </p>
+                    <p>
+                        Dear Parents,
+                        <br />
+                        Please find herewith the fee challan for
+                        <br />
+                        <strong>
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                        </strong>
+                        <br />
+                        Payment may be made via the following
+                        three modes ONLY:
+                    </p>
+                    <p>
+                        1. Cash - payable to any Bank Al Habib Ltd branch
+                        all over Pakistan.
+                    </p>
+                    <p>
+
+                        2. Cheque in favor of HAQUE ACADEMY -
+                        payable to any branch of Bank Al Habib in
+                        Pakistan.
+                    </p>
+                    <p>
+                        3. Pay order in favor of HAQUE ACADEMY -
+                        payable to any branch of Bank Al Habib in
+                        Pakistan.
+                    </p>
+                    <p>
+                        Please note that no other mode of payment
+                        is acceptable, such as Mobile Banking, Online/ATM
+                        transfer, etc.
+                    </p>
+                    <p>
+                        No payment of fees, cash or cheque, 
+                        will be accepted at Haque Academy.
+                    </p>
+                    <p>
+                        Please contact our Accounts Department at
+                        Haque Academy for any questions or queries.
+                    </p>
+                    <p>
+                        Thank you,
+                        <br />
+                        Haque Academy
+                    </p>
+                </section>
+                <!--                 <div style="flex: 0 0 12.5%; max-width: 12.5%;"/> -->
+                <section class="invoice-page">
+                    <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
+                        <t t-set="modo" t-value="'Depositor\'s Copy'" />
+                    </t>
+                </section>
+                <!--                 <div style="flex: 0 0 12.5%; max-width: 12.5%;"/> -->
+                <section class="invoice-page">
+                    <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
+                        <t t-set="modo" t-value="'Bank\'s Copy'" />
+                    </t>
+                </section>
+            </div>
+        </div>
+    </template>
+
+    <!--     <template id="haque_invoices.report_common" inherit_id="web.report_assets_common">
+        <xpath expr="." position="inside">
+            <link href="/haque_invoices/static/src/css/haque_invoice.css" rel="stylesheet" />
+            <script type="text/javascript" src="/haque_invoices/static/src/js/NumeroALetras.js" />
+        </xpath>
+    </template> -->
+</odoo>

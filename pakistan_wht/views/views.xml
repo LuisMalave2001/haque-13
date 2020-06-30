@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/pakistan_wht/static/src/js/popup.js" />
+        </xpath>
+    </template>
+    
+    <record id="pakistan_wht_tax_category_view_tree" model="ir.ui.view">
+        <field name="name">pakistan_wht.tax_category.view.tree</field>
+        <field name="model">pakistan_wht.tax_category</field>
+        <field name="arch" type="xml">
+            <tree string="Tax categories">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="pakistan_wht_tax_category_action" model="ir.actions.act_window">
+        <field name="name">Tax Category Action</field>
+        <field name="res_model">pakistan_wht.tax_category</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="pakistan_wht_tax_category_view_tree" />
+        <field name="domain">[('company_id','=',allowed_company_ids[0])]</field>
+    </record>
+
+    <menuitem id="pakistan_wht_tax_category_menu" name="Categories" sequence="10" parent="contacts.res_partner_menu_config" action="pakistan_wht_tax_category_action" />
+
+    <record id="view_partner_form_inherit_pakistan_wht" model="ir.ui.view">
+        <field name="name">res.partner.view.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <group name="sale" position="inside">
+                <field name="sale_status_wht_id" string="Withholding Status"/>
+            </group>
+            <group name="purchase" position="inside">
+                <field name="status_wht_id" />
+                <field name="tax_category_id" />
+                <field name="yearly_wht_forecast_amount" />
+            </group>
+        </field>
+    </record>
+
+    <record id="pakistan_wht_tax_category_view_form" model="ir.ui.view">
+        <field name="name">pakistan_wht.tax_category.view.form</field>
+        <field name="model">pakistan_wht.tax_category</field>
+        <field name="arch" type="xml">
+            <form string="Tax category">
+                <sheet>
+                    <group>
+                        <field name="name" />
+                    </group>
+                    <notebook>
+                        <page name="pakistan_wht" string="Pakistan wht">
+                            <field name="tax_rate_ids" context="{'default_company_id': allowed_company_ids[0]}">
+                                <tree editable="bottom">
+                                    <field name="company_id" invisible="1" />
+                                    <field name="currency_id" invisible="1" />
+                                    <field name="status" />
+                                    <field name="exempt_upto" />
+                                    <!--                                 <field name="tax_rate"/> -->
+                                    <field name="tax_id" />
+                                    <field name="code" />
+                                    <field name="section_code" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>
