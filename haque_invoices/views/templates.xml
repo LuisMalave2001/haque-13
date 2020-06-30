@@ -208,12 +208,12 @@
             </section>
             <section class="row border border-dark">
                 <table class="w-100">
-                    <tr>
+                    <tr t-if="o.partner_id.sale_status_wht_id not in [False, 'filler']">
                         <td colspan="3">5% Advance Tax on CNIC</td>
                     </tr>
                     <tr>
                         <td>
-                            <t t-esc="o.partner_id.vat" />
+                            <t t-if="o.partner_id.sale_status_wht_id not in [False, 'filler']" t-esc="o.partner_id.vat" />
                         </td>
                         <td>
                             <div class="text-center w-100">Fee</div>
