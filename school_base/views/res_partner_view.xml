@@ -34,6 +34,7 @@
                         </group>
                         <group>
                             <field name="comment_facts"/>
+                            <field name="facts_approved"/>
                             <field name="facts_id"/>
                             <field name="facts_id_int"/>
                         </group>
