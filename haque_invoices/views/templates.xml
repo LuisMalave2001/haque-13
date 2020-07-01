@@ -289,7 +289,9 @@
             </style>
             <div class="row">
                 <section class="col-3">
-                    <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="width: 256px;" alt="Logo" />
+                    <div align="center" class="mt16 mb16">
+                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="width:80%;" alt="Logo" />
+                    </div>
                     <p>
                         <t t-if="o.invoice_date">
                             <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
@@ -308,18 +310,18 @@
                         three modes ONLY:
                     </p>
                     <p>
-                        1. Cash - payable to any Bank Al Habib Ltd branch
+                        1. Cash - payable to any HABIB BANK LTD - branch
                         all over Pakistan.
                     </p>
                     <p>
 
                         2. Cheque in favor of HAQUE ACADEMY -
-                        payable to any branch of Bank Al Habib in
+                        payable to any branch of HABIB Bank LTD in
                         Pakistan.
                     </p>
                     <p>
                         3. Pay order in favor of HAQUE ACADEMY -
-                        payable to any branch of Bank Al Habib in
+                        payable to any branch of HABIB BANK LTD in
                         Pakistan.
                     </p>
                     <p>
