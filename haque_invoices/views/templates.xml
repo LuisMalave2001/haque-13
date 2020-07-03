@@ -53,7 +53,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <b>Bank AL Habib Limited - All Branches</b>
+                            <b>Habib Bank Limited - All Branches</b>
                         </td>
                     </tr>
                     <tr>
@@ -91,6 +91,14 @@
                             <strong>
                                 ID No.:
                                 <span t-field="o.student_id.facts_id" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                PayPro/ConnectPay ID.:
+                                0263<span t-esc="o.student_id.facts_id.zfill(6)" />
                             </strong>
                         </td>
                     </tr>
@@ -289,70 +297,72 @@
             </style>
             <div class="row">
                 <section class="col-3">
-                    <div align="center" class="mt16 mb16">
-                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="width:80%;" alt="Logo" />
+                    <div align="center">
+                        <img class="img-fluid" src="/haque_invoices/static/src/img/invoice_logo.png"/>
                     </div>
                     <p>
                         <t t-if="o.invoice_date">
-                            <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
+                            <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)"/>
                         </t>
                     </p>
                     <p>
                         Dear Parents,
-                        <br />
+                        <br/>
                         Please find herewith the fee challan for
-                        <br />
+                        <br/>
                         <strong>
-                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)"/>
                         </strong>
-                        <br />
-                        Payment may be made via the following
-                        three modes ONLY:
+                        <br/>
                     </p>
-                    <p>
-                        1. Cash - payable to any HABIB BANK LTD - branch
-                        all over Pakistan.
+                    <p class="mb0" align="center">
+                        <strong><u>Mode of Payment</u></strong>
                     </p>
+                    <ol style="margin-left:5px;margin-right:-10px;">
+                        <li>
+                            Cash payable to any HBL branch all over Pakistan
+                        </li>
+                        <li>
+                            Cheque or pay order in favor of Haque Academy payable to any branch of HBL in Pakistan
+                        </li>
+                        <li>
+                            Pay via HBL Internet banking to Haque Academy HBL account
+                        </li>
+                        <li>
+                            Pay via Inter-Bank Funds Transfer (IBFT) using ATM, Internet Banking, Mobile Banking
+                        </li>
+                        <li>
+                            Pay via HBL KONNECT App.
+                        </li>
+                        <li>
+                            Web/Mobile Banking via PayPro / Connect Pay (only for partner banks, additional convenience charge Rs.70)
+                        </li>
+                        <li>
+                            Cash Payable at nearest TCS Center on presenting PayPro / Connect Pay ID as mentioned on voucher (additional convenience charge Rs.70)
+                        </li>
+                        <li>
+                            No payment of fees, cash or cheque, will be accepted at Haque Academy
+                        </li>
+                    </ol>
                     <p>
-
-                        2. Cheque in favor of HAQUE ACADEMY -
-                        payable to any branch of HABIB Bank LTD in
-                        Pakistan.
-                    </p>
-                    <p>
-                        3. Pay order in favor of HAQUE ACADEMY -
-                        payable to any branch of HABIB BANK LTD in
-                        Pakistan.
-                    </p>
-                    <p>
-                        Please note that no other mode of payment
-                        is acceptable, such as Mobile Banking, Online/ATM
-                        transfer, etc.
-                    </p>
-                    <p>
-                        No payment of fees, cash or cheque, 
-                        will be accepted at Haque Academy.
-                    </p>
-                    <p>
-                        Please contact our Accounts Department at
-                        Haque Academy for any questions or queries.
+                        For queries please contact accounts@haqueacademy.edu.pk
                     </p>
                     <p>
                         Thank you,
-                        <br />
+                        <br/>
                         Haque Academy
                     </p>
                 </section>
                 <!--                 <div style="flex: 0 0 12.5%; max-width: 12.5%;"/> -->
                 <section class="invoice-page">
                     <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
-                        <t t-set="modo" t-value="'Depositor\'s Copy'" />
+                        <t t-set="modo" t-value="'Depositor\'s Copy'"/>
                     </t>
                 </section>
                 <!--                 <div style="flex: 0 0 12.5%; max-width: 12.5%;"/> -->
                 <section class="invoice-page">
                     <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
-                        <t t-set="modo" t-value="'Bank\'s Copy'" />
+                        <t t-set="modo" t-value="'Bank\'s Copy'"/>
                     </t>
                 </section>
             </div>
