@@ -3,9 +3,9 @@
     <data>
         <record id="haque_paper_format" model="report.paperformat">
             <field name="name">Haque Paper Format</field>
-            <field name="format">Letter</field>
+            <field name="format">A4</field>
             <field name="default" eval="True"/>
-            <field name="orientation">Portrait</field>
+            <field name="orientation">Landscape</field>
             <field name="margin_top">5</field>
             <field name="margin_bottom">5</field>
             <field name="margin_left">7</field>
