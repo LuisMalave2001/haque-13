@@ -53,7 +53,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <b>Bank AL Habib Limited - All Branches</b>
+                            <b>Habib Bank Limited - All Branches</b>
                         </td>
                     </tr>
                     <tr>
@@ -74,11 +74,6 @@
             <section class="row border border-dark">
                 <table class="w-100 text-center">
                     <tr>
-                        <td class="pl-1 pr-1">
-                            <img style="z-index: -1;" t-att-src="'/report/barcode/Codabar/%s' % o.name " class="w-100 pt-2 pb-2" />
-                        </td>
-                    </tr>
-                    <tr>
                         <td>
                             <strong>
                                 Voucher No.:
@@ -97,7 +92,15 @@
                     <tr>
                         <td>
                             <strong>
-                                <u>LATE FEE EFFECTIVE AFTER</u>
+                                PayPro/ConnectPay ID.:
+                                0263<span t-esc="o.student_id.facts_id.zfill(6)" />
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>
+                                <u>Late Fee Effective After</u>
                             </strong>
                         </td>
                     </tr>
@@ -116,20 +119,17 @@
                 </table>
             </section>
             <section class="row border border-dark">
-                <div class="col-8">
-                    STUDENT NAME:
-                    <br />
-                    <span t-field="o.student_id" />
-                </div>
-                <div class="col-4">
-                    CLASS:
-                    <span t-field="o.student_id.grade_level_id.name" />
-                </div>
+                <table class="w-100">
+                    <tr>
+                        <td>Student Name:<br/><span t-field="o.student_id"/></td>
+                        <td>Class: <span t-field="o.student_id.grade_level_id.name"/></td>
+                    </tr>
+                </table>
             </section>
             <section class="row border border-dark">
                 <table class="w-100">
                     <tr>
-                        <td>LATE FEE EFFECTIVE AFTER:</td>
+                        <td>Late Fee Effective After:</td>
                         <td>
                             <t t-if="o.invoice_date_due">
                                 <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
@@ -137,7 +137,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>CHALLAN INVALID AFTER:</td>
+                        <td>Challan Invalid After:</td>
                         <td>
                             <t t-if="o.invoice_date_invalid">
                                 <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_invalid)" />
@@ -145,7 +145,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>ISSUE DATE:</td>
+                        <td>Issue Date:</td>
                         <td>
                             <t t-if="o.invoice_date">
                                 <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
@@ -163,19 +163,19 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>TUITION FEE:</td>
+                        <td>Tuition Fee:</td>
                         <td>
                             <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
                     </tr>
                     <tr>
-                        <td>TOTAL ADVANCE TAX</td>
+                        <td>Total Advance Tax</td>
                         <td>
                             <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
                     </tr>
                     <tr>
-                        <td>AMOUNT WITHIN DUE DATE:</td>
+                        <td>Amount Within Due Date:</td>
                         <td>
                             <div style="border-top: 3px solid black;">
                                 <span t-esc="advance_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
@@ -187,7 +187,7 @@
             <section class="row border border-dark">
                 <table class="w-100">
                     <tr>
-                        <td>LATE FEE<t t-if="late_fee_has_tax"> WITH TAX</t>:</td>
+                        <td>Late Fee<t t-if="late_fee_has_tax"> with Tax</t>:</td>
                         <td>
                             <span t-esc="late_fee_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
                         </td>
@@ -195,7 +195,7 @@
                     <tr>
                         <td>
                             <u>
-                                <strong>AMOUNT WITH LATE FEE:</strong>
+                                <strong>Amount With Late Fee:</strong>
                             </u>
                         </td>
                         <td>
@@ -237,7 +237,7 @@
                     <tr>
                         <td>
                             <strong>
-                                <u>TOTAL ADVANCE TAX:</u>
+                                <u>Total Advance Tax:</u>
                             </strong>
                         </td>
                         <td colspan="2">
@@ -247,26 +247,6 @@
                         </td>
                     </tr>
                 </table>
-            </section>
-            <section class="row border border-dark">
-                <t t-set="deposit_account" t-value="False" />
-                <t t-if="o.company_id.deposit_account">
-                    <t t-set="deposit_account" t-value="o.company_id.deposit_account" />
-                </t>
-                <t t-if="o.journal_id.deposit_account">
-                    <t t-set="deposit_account" t-value="o.journal_id.deposit_account" />
-                </t>
-                <p class="text-center w-100">
-                    These funds are intended for
-                    <br />
-                    <strong t-field="o.company_id" />
-                    <br />
-                    A/C:
-                    <t t-esc="deposit_account" />
-                    <br />
-                    held with
-                    <t t-esc="o.company_id.street" />
-                </p>
             </section>
             <section class="row border border-dark text-center">
                 <div class="text-center w-100">
@@ -280,89 +260,81 @@
 
     <template id="haque_invoices.report_invoice_with_copy">
         <div class="article o_report_layout_standard position-relative" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
-            <t t-set="o" t-value="o.with_context(lang=lang)" />
+            <t t-set="o" t-value="o.with_context(lang=lang)"/>
             <style>
                 .invoice-page{
-                    width: 32%;
+                    width: 25%;
                     margin-left: 1.5cm;
                 }
             </style>
             <div class="row">
-                <section class="col-3">
-                    <div align="center" class="mt16 mb16">
-                        <img t-if="o.company_id.logo" t-att-src="image_data_uri(o.company_id.logo)" style="width:80%;" alt="Logo" />
+                <section class="col-4">
+                    <div align="center" class="mb4">
+                        <img class="img-fluid" src="/haque_invoices/static/src/img/invoice_logo.png"/>
                     </div>
                     <p>
                         <t t-if="o.invoice_date">
-                            <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
+                            <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)"/>
                         </t>
                     </p>
                     <p>
                         Dear Parents,
-                        <br />
+                        <br/>
                         Please find herewith the fee challan for
-                        <br />
                         <strong>
-                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)"/>
                         </strong>
-                        <br />
-                        Payment may be made via the following
-                        three modes ONLY:
                     </p>
-                    <p>
-                        1. Cash - payable to any HABIB BANK LTD - branch
-                        all over Pakistan.
+                    <p class="mb0" align="center">
+                        <strong><u>Mode of Payment</u></strong>
                     </p>
+                    <ol class="ml16">
+                        <li>
+                            Cash payable to any HBL branch all over Pakistan
+                        </li>
+                        <li>
+                            Cheque or pay order in favor of Haque Academy payable to any branch of HBL in Pakistan
+                        </li>
+                        <li>
+                            Pay via HBL Internet banking to Haque Academy HBL account
+                        </li>
+                        <li>
+                            Pay via Inter-Bank Funds Transfer (IBFT) using ATM, Internet Banking, Mobile Banking
+                        </li>
+                        <li>
+                            Pay via HBL KONNECT App.
+                        </li>
+                        <li>
+                            Web/Mobile Banking via PayPro / Connect Pay (only for partner banks, additional convenience charge Rs.70)
+                        </li>
+                        <li>
+                            Cash Payable at nearest TCS Center on presenting PayPro / Connect Pay ID as mentioned on voucher (additional convenience charge Rs.70)
+                        </li>
+                        <li>
+                            No payment of fees, cash or cheque, will be accepted at Haque Academy
+                        </li>
+                    </ol>
                     <p>
-
-                        2. Cheque in favor of HAQUE ACADEMY -
-                        payable to any branch of HABIB Bank LTD in
-                        Pakistan.
-                    </p>
-                    <p>
-                        3. Pay order in favor of HAQUE ACADEMY -
-                        payable to any branch of HABIB BANK LTD in
-                        Pakistan.
-                    </p>
-                    <p>
-                        Please note that no other mode of payment
-                        is acceptable, such as Mobile Banking, Online/ATM
-                        transfer, etc.
-                    </p>
-                    <p>
-                        No payment of fees, cash or cheque, 
-                        will be accepted at Haque Academy.
-                    </p>
-                    <p>
-                        Please contact our Accounts Department at
-                        Haque Academy for any questions or queries.
+                        For queries please contact accounts@haqueacademy.edu.pk
                     </p>
                     <p>
                         Thank you,
-                        <br />
+                        <br/>
                         Haque Academy
                     </p>
                 </section>
-                <!--                 <div style="flex: 0 0 12.5%; max-width: 12.5%;"/> -->
                 <section class="invoice-page">
                     <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
-                        <t t-set="modo" t-value="'Depositor\'s Copy'" />
+                        <t t-set="modo" t-value="'Depositor\'s Copy'"/>
                     </t>
                 </section>
-                <!--                 <div style="flex: 0 0 12.5%; max-width: 12.5%;"/> -->
+                <img style="position:absolute;left:10.72in;top:0.7in;" src="/haque_invoices/static/src/img/stamp.png"/>
                 <section class="invoice-page">
                     <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
-                        <t t-set="modo" t-value="'Bank\'s Copy'" />
+                        <t t-set="modo" t-value="'Bank\'s Copy'"/>
                     </t>
                 </section>
             </div>
         </div>
     </template>
-
-    <!--     <template id="haque_invoices.report_common" inherit_id="web.report_assets_common">
-        <xpath expr="." position="inside">
-            <link href="/haque_invoices/static/src/css/haque_invoice.css" rel="stylesheet" />
-            <script type="text/javascript" src="/haque_invoices/static/src/js/NumeroALetras.js" />
-        </xpath>
-    </template> -->
 </odoo>
