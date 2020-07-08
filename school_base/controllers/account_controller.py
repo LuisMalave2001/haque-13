@@ -113,7 +113,7 @@ class StudentController(http.Controller):
         #crea una variable con el modelo desde donde se va a tomar la información:'res.company'          
         compania = http.request.env['res.company']
         #filtro del modelo basados en parametros de la url. ilike como el like pero no diferencia mayusculas de minisculas
-        search_compania = [("x_district_code","ilike",(kw['dist']))]        
+        search_compania = [("district_code_name","ilike",(kw['dist']))]        
         #Buscamos informacion en el modelo con el filtro definido. Con sudo() entramos como administradores
         compania_record = compania.sudo().search(search_compania)
         #Obtenemos los registros con los datos que buscamos. Solo recogemos los campos definidos a continuacion 
@@ -166,8 +166,9 @@ class StudentController(http.Controller):
             #Tomar informacion basado en el modelo y en el domain IDS
             datosLinea_record = datosLinea.sudo().search(search_domain_linea)      
             #Obtienes la información basada en los ids anteriores y tomando en cuenta los campos definifos en la funcion posterior
-            datosLinea_values = datosLinea_record.read(["product_id","quantity","price_unit","discount","analytic_tag_ids","subscription_id","account_id","tax_ids",
-                                                       "analytic_account_id","name"]) 
+            datosLinea_values = datosLinea_record.read(["product_id","quantity","price_unit","discount","analytic_tag_ids",
+                                                        #"subscription_id",
+                                                        "account_id","tax_ids", "analytic_account_id","name"]) 
  
             record["datos"] = datosLinea_values
                 
