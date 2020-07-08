@@ -12,7 +12,6 @@
                 <page string="School information">
                     <group>
                         <field name="district_code_id"/>
-                        <field name="district_code_id"/>
                     </group>
                 </page>
             </notebook>
