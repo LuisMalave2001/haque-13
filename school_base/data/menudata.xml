@@ -20,7 +20,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="action_school_configuration_district_codes">
-        <field name="name">Disctrict codes</field>
+        <field name="name">District codes</field>
         <field name="res_model">school_base.district_code</field>
         <field name="view_mode">tree,form</field>
     </record>

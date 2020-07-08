@@ -75,15 +75,13 @@ class ResPartnerMakeSale(models.TransientModel):
 
                         if not parent_category_id:
                             raise UserError(
-                                _("%s doesn't have a family responsible for %s") % (partner_id.name, product_id.categ_id.name))
+                                _('There is no responsible family for %s') % (line.product_id.categ_id.name))
 
                 if partner_id.person_type == 'student' and values["separate_by_financial_responsability"]:
 
                     # We build several sale order depending on
 
                     for family_id in partner_id.family_ids:
-                        if not family_id.invoice_address_id:
-                            raise UserError(_("There is no Invoice Address related with the family %s") % (family_id.name))
                         sale_dict = dict()
                         sale_dict["partner_id"] = family_id.invoice_address_id.id
                         sale_dict["student_id"] = partner_id.id

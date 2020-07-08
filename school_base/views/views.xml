@@ -38,8 +38,8 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="view_grade_level_tree">
-        <field name="name">School level</field>
+    <record model="ir.ui.view" id="view_district_level_tree">
+        <field name="name">Disctict Code</field>
         <field name="model">school_base.district_code</field>
         <field name="arch" type="xml">
             <tree editable="bottom">

@@ -23,24 +23,8 @@ class SaleOrderForStudents(models.Model):
     student_id = fields.Many2one("res.partner", string="Student", domain=[('person_type', '=', 'student')])
     family_id = fields.Many2one("res.partner", string="Family", domain=[('is_family', '=', True)])
 
-    def _prepare_invoice(self):
-        self.ensure_one()
-        invoice_vals = super(SaleOrderForStudents, self)._prepare_invoice()
-        if self.invoice_date:
-            invoice_vals["invoice_date"] = self.invoice_date
-        return invoice_vals
 
     def _create_invoices(self, grouped=False, final=False):
-        for order in self:
-            if order.state not in ["sale", "done"]:
-                raise UserError(_("Cannot create an invoice for %s because it is not confirmed.") % (order.name))
-            lines_to_invoice = 0
-            for line in order.order_line:
-                if line.qty_to_invoice > 0 or (line.qty_to_invoice < 0 and final):
-                    lines_to_invoice += 1
-            if lines_to_invoice == 0 and order.invoice_ids:
-                raise UserError(_("%s already has Invoice/s: %s. No new invoices created.") % (
-                    order.name, ", ".join(order.invoice_ids.mapped("display_name"))))
 
         all_moves = super()._create_invoices(grouped, final)
 
@@ -79,7 +63,6 @@ class SaleOrderForStudents(models.Model):
         
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
-
     @api.onchange('product_uom', 'product_uom_qty')
     def product_uom_change(self):
         super().product_uom_change()
