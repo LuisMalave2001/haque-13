@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="mail_notification_paynow_inherit" inherit_id="mail.mail_notification_paynow">
+        <xpath expr="//div[@t-if='record.user_id.sudo().signature']/.." position="replace">
+            <t t-if="record.user_id and not record.env.user._is_superuser()">
+                <div style="margin: 0px; padding: 0px; font-size:13px;">
+                    Best regards,<br/>
+                    Accounts Office
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

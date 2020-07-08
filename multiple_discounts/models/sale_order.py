@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, _, api
+from odoo.exceptions import MissingError
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -36,6 +37,9 @@ class SaleOrder(models.Model):
                 for discount in discount_applicable:
                     percent = discount.percent
                     discount_count = -order_line_id.price_subtotal * (percent/100)
+
+                    if not discount.product_id:
+                        raise MissingError("There is no product set for the discount %s" % discount.name)
 
                     order_line_create = {
                         "product_id": discount.product_id.get_single_product_variant().get("product_id", False),
