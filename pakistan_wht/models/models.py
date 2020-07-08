@@ -3,8 +3,8 @@
 from odoo import models, fields, api
 
 wht_dict = [
-    ('filler', 'Filler'),
-    ('no_filler', 'No filler'),
+    ('filler', 'Filer'),
+    ('no_filler', 'No filer'),
     ('exempt', 'Exempt'),
 ]
 
