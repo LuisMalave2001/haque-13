@@ -21,11 +21,42 @@ class Invoice(models.Model):
     late_fee_amount = fields.Monetary(string="Late Fee Amount",
         compute="_compute_late_fee_amount")
     late_fee_was_applied = fields.Boolean(default=False)
+    paypro_id = fields.Char(string="PayPro/Connect Pay ID",
+        compute="_compute_paypro_id")
+    fee_month = fields.Char(string="Fee Month",
+        compute="_compute_fee_month")
+    grade_level_id = fields.Many2one(string="Class",
+        comodel_name="school_base.grade_level",
+        related="student_id.grade_level_id")
+    amount_before_due = fields.Monetary(string="Amount Before Due Date",
+        compute="_compute_due_amounts")
+    amount_after_due = fields.Monetary(string="Amount After Due Date",
+        compute="_compute_due_amounts")
     
     def _compute_late_fee_amount(self):
         for move in self:
             move.late_fee_amount = move.journal_id.late_fee_amount_default or \
                                    move.company_id.late_fee_amount_default or 0.0
+    
+    def _compute_paypro_id(self):
+        for move in self:
+            move.paypro_id = "%s%s" % (move.journal_id.paypro_prefix or "",
+                                       move.student_facts_id or "")
+    
+    def _compute_fee_month(self):
+        for move in self:
+            move.fee_month = move.invoice_date and move.invoice_date.strftime("%b-%y") or False
+    
+    def _compute_due_amounts(self):
+        late_fee_product = self.env.ref("haque_invoices.late_fee_product", raise_if_not_found=True)
+        for move in self:
+            matched = move.invoice_line_ids.filtered(lambda l: l.product_id.id == late_fee_product.product_variant_id.id)
+            if matched:
+                move.amount_before_due = move.amount_total - matched[0].price_total
+                move.amount_after_due = move.amount_total
+            else:
+                move.amount_before_due = move.amount_total
+                move.amount_after_due = move.amount_total + move.late_fee_amount
 
     @api.depends("invoice_date_due")
     def _compute_invoice_date_invalid(self):

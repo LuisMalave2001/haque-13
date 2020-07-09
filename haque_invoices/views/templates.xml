@@ -93,7 +93,7 @@
                         <td>
                             <strong>
                                 PayPro/ConnectPay ID.:
-                                0263<span t-esc="o.student_id.facts_id.zfill(6)" />
+                                <span t-esc="o.journal_id.paypro_prefix"/><span t-esc="o.student_id.facts_id.zfill(6)" />
                             </strong>
                         </td>
                     </tr>

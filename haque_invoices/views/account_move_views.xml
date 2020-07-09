@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_move_view_tree_bank_format" model="ir.ui.view">
+        <field name="name">account.move.view.tree.bank.export</field>
+        <field name="model">account.move</field>
+        <field name="arch" type="xml">
+            <tree string="Invoices (Bank Export)">
+                <field name="name" string="Invoice No."/>
+                <field name="ref"/>
+                <field name="student_facts_id" string="ID No."/>
+                <field name="paypro_id"/>
+                <field name="student_id" string="Student Name"/>
+                <field name="partner_id" string="Payee Name"/>
+                <field name="fee_month"/>
+                <field name="amount_before_due"/>
+                <field name="invoice_date_due"/>
+                <field name="amount_after_due"/>
+                <field name="invoice_date_invalid" string="Validity Date"/>
+                <field name="state" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="account_move_action_bank_format" model="ir.actions.act_window">
+        <field name="name">Invoices (Bank Format)</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="account_move_view_tree_bank_format"/>
+        <field name="search_view_id" ref="account.view_account_invoice_filter"/>
+        <field name="domain">[('type','=','out_invoice')]</field>
+        <field name="context">{'create': 0, 'edit': 0, 'delete': 0}</field>
+    </record>
+
+    <menuitem
+        id="account_move_menu_bank_format"
+        name="Invoices (Bank Format)"
+        action="account_move_action_bank_format"
+        parent="account.menu_finance_receivables"
+        sequence="150"/>
+</odoo>
