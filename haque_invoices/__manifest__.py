@@ -36,6 +36,7 @@
         'views/reports.xml',
         'views/views.xml',
         'views/templates.xml',
+        'views/account_move_views.xml',
         'views/account_move_templates.xml',
     ]
 }

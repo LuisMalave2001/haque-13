@@ -14,3 +14,4 @@ class AccountJournal(models.Model):
     deposit_account = fields.Char(string='Deposit Account', default=lambda self: self.company_id.deposit_account)
 
     late_fee_amount_default = fields.Monetary(string='Late Fee amount')
+    paypro_prefix = fields.Char(string="PayPro Prefix")

@@ -52,6 +52,7 @@
                         <field name="main_account" />
                         <field name="deposit_account" />
                         <field name="late_fee_amount_default" />
+                        <field name="paypro_prefix" />
                     </group>
                 </page>
             </notebook>
