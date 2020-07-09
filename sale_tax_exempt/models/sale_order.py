@@ -8,6 +8,13 @@ from odoo import api, fields, models
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
+    def _create_invoices(self, grouped=False, final=False):
+        res = self.env["account.move"]
+        for order in self:
+            order.check_so_tax_exempt()
+            res |= super(SaleOrder, order)._create_invoices(grouped, final)
+        return res
+
     @api.constrains("amount_untaxed", "invoice_date")
     def check_so_tax_exempt(self):
         for sale in self:
