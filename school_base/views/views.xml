@@ -32,6 +32,7 @@
             <tree editable="bottom">
                 <field name="sequence" widget='handle'/>
                 <field name="name"/>
+                <field name="capacity"/>
                 <field name="school_code_id"/>
                 <field name="district_code_id" readonly="1"/>
             </tree>
@@ -48,4 +49,7 @@
             </tree>
         </field>
     </record>
+
+
+
 </odoo>

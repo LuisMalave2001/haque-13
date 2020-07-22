@@ -38,4 +38,6 @@
 
     <menuitem id="school_configuration_menu_district_code" action="action_school_configuration_district_codes"
               name="District code" parent="school_configuration_menu"/>
+
+
 </odoo>

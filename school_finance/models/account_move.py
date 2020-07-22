@@ -11,7 +11,6 @@ class AccountMove(models.Model):
     family_members_ids = fields.Many2many(related="family_id.member_ids")
 
     receivable_account_id = fields.Many2one("account.account", string="Receivable account", domain=[("user_type_id.type", "=", "receivable")])
-    student_facts_id = fields.Char(string="Student Fact ID", related="student_id.facts_id")
 
     def set_receivable_account(self):
         for record in self:
