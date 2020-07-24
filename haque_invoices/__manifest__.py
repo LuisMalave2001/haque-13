@@ -31,12 +31,14 @@
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         'data/automated_actions.xml',
         'views/reports.xml',
         'views/views.xml',
         'views/templates.xml',
         'views/account_move_views.xml',
         'views/account_move_templates.xml',
+        'views/account_payment_import_views.xml',
+        'wizards/account_payment_import_wizard_views.xml',
     ]
 }
