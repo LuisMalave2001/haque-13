@@ -40,7 +40,7 @@ class Contact(models.Model):
     grade_level_id = fields.Many2one("school_base.grade_level", string="Grade Level")
     homeroom = fields.Char("Homeroom")
 
-    student_status = fields.Char("Student status", help="(This field is deprecated)")
+    student_status = fields.Char("Student Status", help="(This field is deprecated)")
 
     comment_facts = fields.Text("Facts Comment")
     family_ids = fields.Many2many("res.partner", string="Families", relation="partner_families", column1="partner_id",
