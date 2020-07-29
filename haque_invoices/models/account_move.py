@@ -32,6 +32,8 @@ class Invoice(models.Model):
         compute="_compute_due_amounts")
     amount_after_due = fields.Monetary(string="Amount After Due Date",
         compute="_compute_due_amounts")
+    student_facts_id = fields.Char(string="Student Fact ID",
+        related="student_id.facts_id")
     
     def _compute_late_fee_amount(self):
         for move in self:

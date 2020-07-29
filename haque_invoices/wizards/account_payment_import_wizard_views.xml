@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="account_payment_import_wizard_view_form" model="ir.ui.view">
+        <field name="name">account.payment.import.wizard.view.form</field>
+        <field name="model">account.payment.import.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="journal_id" options="{'no_create_edit': 1, 'no_create': 1}"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="account_payment_import_wizard_action"
+        name="Create Payments"
+        view_id="account_payment_import_wizard_view_form"
+        res_model="account.payment.import.wizard"
+        binding_model="account.payment.import"
+        view_mode="form"
+        target="new"/>
+
+</odoo>
