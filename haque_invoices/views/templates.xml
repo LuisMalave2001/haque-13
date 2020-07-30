@@ -37,7 +37,7 @@
                         <td>
                             <b>
                                 (Class
-                                <span t-field="o.student_id.grade_level_id" />
+                                <span t-field="o.student_grade_level" />
                                 )
                             </b>
                         </td>
@@ -122,7 +122,7 @@
                 <table class="w-100">
                     <tr>
                         <td>Student Name:<br/><span t-field="o.student_id"/></td>
-                        <td>Class: <span t-field="o.student_id.grade_level_id.name"/></td>
+                        <td>Class: <span t-field="o.student_grade_level.name"/></td>
                     </tr>
                 </table>
             </section>
