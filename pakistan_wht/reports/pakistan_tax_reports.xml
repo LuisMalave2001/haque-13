@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <report
+        id="action_pakistan_tax_report"
+        model="account.payment"
+        string=" Generate Tax Report xlsx"
+        report_type="xlsx"
+        name="pakistan_wht.pakistan_tax_report"
+        file="pakistan_tax_report"
+        attachment_use="False"/>
+
+</odoo>

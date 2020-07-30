@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="pakistan_tax_report_wizard_view_form" model="ir.ui.view">
+        <field name="name">pakistan.tax.report.wizard.view.form</field>
+        <field name="model">pakistan.tax.report.wizard</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Pakistan Tax Report Wizard Form">
+                Note: Rerefence is Invoice Date
+                <group>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="pakistan_tax_report_wizard_action" model="ir.actions.act_window">
+        <field name="name">Pakistan Tax Report</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">pakistan.tax.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="pakistan_tax_report_wizard_view_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="preparation_list_wizard_menu"
+        name="Generate Pakistan Tax Report"
+        parent="account.account_reports_management_menu"
+        action="pakistan_tax_report_wizard_action"
+        sequence="21"/>
+</odoo>
