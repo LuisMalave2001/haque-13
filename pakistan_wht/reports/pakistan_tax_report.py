@@ -12,7 +12,7 @@ class PakistanTaxReport(models.AbstractModel):
     def _get_invoices(self, from_date, to_date):
         self.env.cr.execute("""
                 SELECT id FROM account_move 
-                WHERE state = 'posted' AND type = 'out_invoice'
+                WHERE state = 'posted' AND type = 'out_invoice' AND invoice_payment_state = 'paid' 
                 AND invoice_date BETWEEN '%(from_date)s' AND '%(to_date)s'
             """ % {"from_date": from_date, "to_date": to_date})
         res = [x[0] for x in self.env.cr.fetchall()]
