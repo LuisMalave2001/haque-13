@@ -20,11 +20,14 @@
         'base',
         'purchase',
         'sale',
+        'report_xlsx',
     ],
 
     # always loaded
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'wizards/pakistan_tax_report_wizard_views.xml',
+        'reports/pakistan_tax_reports.xml',
     ],
 }
