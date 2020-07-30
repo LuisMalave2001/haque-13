@@ -20,7 +20,6 @@
         'base',
         'purchase',
         'sale',
-        'report_xlsx',
     ],
 
     # always loaded
