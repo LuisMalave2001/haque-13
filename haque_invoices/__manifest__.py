@@ -33,6 +33,8 @@
     'data': [
         'security/ir.model.access.csv',
         'data/automated_actions.xml',
+        'data/mail_template_data.xml',
+        'data/base_automation_data.xml',
         'views/reports.xml',
         'views/views.xml',
         'views/templates.xml',
