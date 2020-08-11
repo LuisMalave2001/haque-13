@@ -45,22 +45,36 @@ class HrContractContribution(models.Model):
     @api.depends("amount", "employee_percent", "company_percent", "percentage_of_wage", "contract_id.wage")
     def _compute_distributed_amount(self):
         for contrib in self:
-            amount = (contrib.contract_id.wage * contrib.amount / 100.0) if contrib.percentage_of_wage else contrib.amount
-            contrib.employee_amount = amount * contrib.employee_percent / 100.0
-            contrib.company_amount = amount * contrib.company_percent / 100.0
+            employee_amount, company_amount = contrib._get_distributed_amount()
+            contrib.employee_amount = employee_amount
+            contrib.company_amount = company_amount
+    
+    def _get_distributed_amount(self, wage=False):
+        self.ensure_one()
+        wage = wage or self.contract_id.wage
+        amount = (wage * self.amount / 100.0) if self.percentage_of_wage else self._get_amount(wage=wage)
+        employee_amount = amount * self.employee_percent / 100.0
+        company_amount = amount * self.company_percent / 100.0
+        return employee_amount, company_amount
     
     @api.depends("contract_id.wage", "table_id", "table_id.bracket_ids.lower_limit",
                  "table_id.bracket_ids.fixed_amount", "table_id.bracket_ids.percentage_amount")
     def _compute_amount(self):
         for contrib in self:
-            amount = contrib.amount
-            if contrib.table_id and contrib.table_id.bracket_ids:
-                for bracket in contrib.table_id.bracket_ids[::-1]:
-                    if contrib.contract_id.wage >= bracket.lower_limit:
-                        amount = bracket.fixed_amount + \
-                            bracket.percentage_amount / 100 * (contrib.contract_id.wage - bracket.lower_limit)
-                        break
-            contrib.amount = amount
+            contrib.amount = contrib._get_amount()
+    
+    def _get_amount(self, wage=False):
+        self.ensure_one()
+        wage = wage or self.contract_id.wage
+        amount = self.amount
+        if self.table_id and self.table_id.bracket_ids:
+            amount = 0
+            for bracket in self.table_id.bracket_ids[::-1]:
+                if wage > bracket.lower_limit:
+                    amount = bracket.fixed_amount + \
+                        bracket.percentage_amount / 100 * (wage - bracket.lower_limit)
+                    break
+        return amount
 
     @api.onchange("table_id")
     def _onchange_table_id(self):
