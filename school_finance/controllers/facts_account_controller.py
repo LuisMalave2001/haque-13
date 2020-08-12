@@ -56,7 +56,7 @@ class FactsAccountController(http.Controller):
         facturas_values = facturas_record.read(
             ["name", "state", "partner_id", "ref", "student_id", "family_id", "invoice_date", "invoice_payment_term_id",
              "journal_id", "company_id", "access_token",
-             "amount_untaxed", "amount_by_group", "amount_total", "amount_residual", "invoice_line_ids", "line_ids"])
+             "amount_untaxed", "amount_by_group", "amount_total", "amount_residual", "invoice_line_ids", "line_ids","type"])
 
         for record in facturas_values:
             if record["invoice_date"]:
