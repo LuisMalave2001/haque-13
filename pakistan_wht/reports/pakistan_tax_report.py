@@ -62,9 +62,11 @@ class PakistanTaxReport(models.AbstractModel):
         row = 1
         for invoice in invoices:
             name = []
-            name.append(invoice.partner_id.first_name)
-            name.append(invoice.partner_id.last_name)
-            sheet.write(row, 1, " ".join(name), data_format)
+            if invoice.partner_id.first_name:
+                name.append(invoice.partner_id.first_name)
+            if invoice.partner_id.last_name:
+                name.append(invoice.partner_id.last_name)
+            sheet.write(row, 1, " ".join(name) or "", data_format)
             row += 1
 
         row = 1  
