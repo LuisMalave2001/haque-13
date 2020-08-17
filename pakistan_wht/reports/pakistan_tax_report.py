@@ -7,6 +7,7 @@ from dateutil import tz
 
 class PakistanTaxReport(models.AbstractModel):
     _name = "report.pakistan_wht.pakistan_tax_report"
+    _description = "Pakistan Tax Report"
     _inherit = 'report.report_xlsx.abstract'
 
     def _get_invoices(self, from_date, to_date):
