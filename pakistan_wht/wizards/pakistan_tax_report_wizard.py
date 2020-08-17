@@ -4,6 +4,7 @@ from odoo import models, fields, api
 
 class PakistanTaxReportWizard(models.TransientModel):
     _name = "pakistan.tax.report.wizard"
+    _description = "Pakistan Tax Report Wizard"
 
     start_date = fields.Date(string="Start Date",
         required=True)
