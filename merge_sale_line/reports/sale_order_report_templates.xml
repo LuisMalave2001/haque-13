@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_document_inherit" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//table[hasclass('o_main_table')]" position="before">
+            <t t-set="already_merged_products" t-value="[]"/>
+        </xpath>
+        <xpath expr="//t[@t-if='not line.display_type']" position="replace">
+            <t t-if="not line.display_type and line.id not in already_merged_products">
+                <t t-set="merged_price_unit" t-value="line.price_unit"/>
+                <t t-set="merged_price_subtotal" t-value="line.price_subtotal"/>
+                <t t-set="merged_price_total" t-value="line.price_total"/>
+                <t t-foreach="doc.order_line.filtered(lambda l: l.id != line.id)" t-as="line2">
+                    <t t-if="line.product_id == line2.merge_product_id and line2.id not in already_merged_products">
+                        <t t-set="already_merged_products" t-value="already_merged_products + [line2.id]"/>
+                        <t t-set="merged_price_unit" t-value="merged_price_unit + (line2.product_uom_qty * line2.price_unit / line.product_uom_qty)"/>
+                        <t t-set="merged_price_subtotal" t-value="merged_price_subtotal + line2.price_subtotal"/>
+                        <t t-set="merged_price_total" t-value="merged_price_total + line2.price_total"/>
+                    </t>
+                </t>
+                <td name="td_name"><span t-field="line.name"/></td>
+                <td name="td_quantity" class="text-right">
+                    <span t-field="line.product_uom_qty"/>
+                    <span t-field="line.product_uom" groups="uom.group_uom"/>
+                </td>
+                <td name="td_priceunit" class="text-right">
+                    <span t-esc="merged_price_unit" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
+                </td>
+                <td t-if="display_discount" class="text-right" groups="product.group_discount_per_so_line">
+                    <span t-field="line.discount"/>
+                </td>
+                <td name="td_taxes" class="text-right">
+                    <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.tax_id))"/>
+                </td>
+                <td name="td_subtotal" class="text-right o_price_total">
+                    <span t-esc="merged_price_subtotal" groups="account.group_show_line_subtotals_tax_excluded" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
+                    <span t-esc="merged_price_total" groups="account.group_show_line_subtotals_tax_included" t-options="{'widget': 'monetary', 'display_currency': doc.pricelist_id.currency_id}"/>
+                </td>
+            </t>
+        </xpath>
+    </template>
+</odoo>

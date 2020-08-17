@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_document_inherit" inherit_id="account.report_invoice_document">
+        <table name="invoice_line_table" position="before">
+            <t t-set="already_merged_products" t-value="[]"/>
+        </table>
+        <t name="account_invoice_line_accountable" position="replace">
+            <t t-if="not line.display_type and line.id not in already_merged_products" name="account_invoice_line_accountable">
+                <t t-set="merged_price_unit" t-value="line.price_unit"/>
+                <t t-set="merged_price_subtotal" t-value="line.price_subtotal"/>
+                <t t-set="merged_price_total" t-value="line.price_total"/>
+                <t t-foreach="lines.filtered(lambda l: l.id != line.id)" t-as="line2">
+                    <t t-if="line.product_id == line2.merge_product_id and line2.id not in already_merged_products">
+                        <t t-set="already_merged_products" t-value="already_merged_products + [line2.id]"/>
+                        <t t-set="merged_price_unit" t-value="merged_price_unit + (line2.quantity * line2.price_unit / line.quantity)"/>
+                        <t t-set="merged_price_subtotal" t-value="merged_price_subtotal + line2.price_subtotal"/>
+                        <t t-set="merged_price_total" t-value="merged_price_total + line2.price_total"/>
+                    </t>
+                </t>
+                <td name="account_invoice_line_name"><span t-field="line.name" t-options="{'widget': 'text'}"/></td>
+                <td class="text-right">
+                    <span t-field="line.quantity"/>
+                    <span t-field="line.product_uom_id" groups="uom.group_uom"/>
+                </td>
+                <td t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                    <span class="text-nowrap" t-esc="merged_price_unit" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                </td>
+                <td t-if="display_discount" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                    <span class="text-nowrap" t-field="line.discount"/>
+                </td>
+                <td t-attf-class="text-left {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                    <span t-esc="', '.join(map(lambda x: (x.description or x.name), line.tax_ids))" id="line_tax_ids"/>
+                </td>
+                <td class="text-right o_price_total">
+                    <span class="text-nowrap" t-esc="merged_price_subtotal" groups="account.group_show_line_subtotals_tax_excluded" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                    <span class="text-nowrap" t-esc="merged_price_total" groups="account.group_show_line_subtotals_tax_included" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                </td>
+            </t>
+        </t>
+    </template>
+</odoo>
