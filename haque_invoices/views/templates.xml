@@ -159,7 +159,7 @@
                     <tr>
                         <td colspan="2">
                             Fees of
-                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
                         </td>
                     </tr>
                     <tr>
