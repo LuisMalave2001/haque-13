@@ -315,7 +315,7 @@
                         <br/>
                         Please find herewith the fee challan for
                         <strong>
-                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)"/>
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date)"/>
                         </strong>
                     </p>
                     <p class="mb0" align="center">
