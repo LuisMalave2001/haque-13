@@ -258,7 +258,7 @@
                     <tr>
                         <td>
                             Current Fee
-                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
                         </td>
                         <td style="padding-left: 6px;padding-right: 6px;">
                             <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
