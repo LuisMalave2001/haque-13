@@ -6,3 +6,4 @@ from . import sale_order
 from . import res_company
 from . import account_journal
 from . import account_payment_import
+from . import journal_late_fee_range

@@ -36,9 +36,14 @@ class Invoice(models.Model):
         related="student_id.facts_id")
     
     def _compute_late_fee_amount(self):
-        for move in self:
-            move.late_fee_amount = move.journal_id.late_fee_amount_default or \
-                                   move.company_id.late_fee_amount_default or 0.0
+        for move_id in self:
+
+            late_fee_amount_range_ids = move_id.journal_id.late_fee_amount_range_ids.filtered(lambda range_id: range_id.date_from <= move_id.invoice_date)
+            if late_fee_amount_range_ids:
+                move_id.late_fee_amount = late_fee_amount_range_ids.sorted(key="date_from", reverse=True)[0].amount
+            else:
+                move_id.late_fee_amount = move_id.journal_id.late_fee_amount_default or \
+                                       move_id.company_id.late_fee_amount_default or 0.0
     
     def _compute_paypro_id(self):
         for move in self:
