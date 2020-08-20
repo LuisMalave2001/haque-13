@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_account_payment_import,access.account_payment_import,model_account_payment_import,account.group_account_invoice,1,1,1,1
+access_haque_invoices_journal_late_fee_range,access.haque_invoices_journal_late_fee_range,haque_invoices.model_haque_invoices_journal_late_fee_range,account.group_account_invoice,1,1,1,1

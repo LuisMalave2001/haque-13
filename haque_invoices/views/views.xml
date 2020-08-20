@@ -53,6 +53,14 @@
                         <field name="deposit_account" />
                         <field name="late_fee_amount_default" />
                         <field name="paypro_prefix" />
+
+                        <field name="late_fee_amount_range_ids">
+                            <tree editable="bottom">
+                                <field name="date_from"/>
+                                <field name="amount"/>
+                            </tree>
+                        </field>
+
                     </group>
                 </page>
             </notebook>

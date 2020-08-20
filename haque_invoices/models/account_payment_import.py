@@ -11,8 +11,7 @@ class AccountPaymentImport(models.Model):
         required=True)
     facts_id = fields.Char(string="Facts ID",
         required=True)
-    student_name = fields.Char(string="Student Name",
-        required=True)
+    student_name = fields.Char(string="Student Name")
     invoice_number = fields.Char(string="Invoice No",
         required=True)
     paypro_id = fields.Char(string="PayPro/Connect ID",
