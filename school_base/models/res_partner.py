@@ -73,6 +73,9 @@ class Contact(models.Model):
 
     student_status = fields.Char("Student status (Deprecated)", help="(This field is deprecated)")
 
+    next_student_status = fields.Char("Student status")
+    next_grade_level_id = fields.Many2one("school_base.grade_level", string="Grade Level")
+    
     comment_facts = fields.Text("Facts Comment")
     family_ids = fields.Many2many("res.partner", string="Families", relation="partner_families", column1="partner_id",
                                   column2="partner_family_id")

@@ -37,7 +37,7 @@ class Invoice(models.Model):
     @api.depends('invoice_date', 'type')
     def _compute_late_fee_amount(self):
         for move_id in self:
-            late_fee_amount = False
+            late_fee_amount = 0
             if move_id.type == 'out_invoice' and move_id.invoice_date:
                 late_fee_amount_range_ids = move_id.journal_id.late_fee_amount_range_ids.filtered(lambda range_id: range_id.date_from <= move_id.invoice_date)
                 if late_fee_amount_range_ids:
