@@ -8,6 +8,7 @@
         report_type="xlsx"
         name="pakistan_wht.pakistan_tax_report"
         file="pakistan_tax_report"
-        attachment_use="False"/>
+        attachment_use="False"
+        menu="False"/>
 
 </odoo>

@@ -18,8 +18,7 @@ class Invoice(models.Model):
         compute="_compute_invoice_date_invalid",
         store=True,
         readonly=False)
-    late_fee_amount = fields.Monetary(string="Late Fee Amount",
-        compute="_compute_late_fee_amount")
+    late_fee_amount = fields.Monetary(string="Late Fee Amount", store=True, compute="_compute_late_fee_amount")
     late_fee_was_applied = fields.Boolean(default=False)
     paypro_id = fields.Char(string="PayPro/Connect Pay ID",
         compute="_compute_paypro_id")
@@ -34,16 +33,20 @@ class Invoice(models.Model):
         compute="_compute_due_amounts")
     student_facts_id = fields.Char(string="Student Fact ID",
         related="student_id.facts_id")
-    
+
+    @api.depends('invoice_date', 'type')
     def _compute_late_fee_amount(self):
         for move_id in self:
+            late_fee_amount = 0
+            if move_id.type == 'out_invoice' and move_id.invoice_date:
+                late_fee_amount_range_ids = move_id.journal_id.late_fee_amount_range_ids.filtered(lambda range_id: range_id.date_from <= move_id.invoice_date)
+                if late_fee_amount_range_ids:
+                    late_fee_amount = late_fee_amount_range_ids.sorted(key="date_from", reverse=True)[0].amount
+                else:
+                    late_fee_amount = move_id.journal_id.late_fee_amount_default or \
+                                           move_id.company_id.late_fee_amount_default or 0.0
 
-            late_fee_amount_range_ids = move_id.journal_id.late_fee_amount_range_ids.filtered(lambda range_id: range_id.date_from <= move_id.invoice_date)
-            if late_fee_amount_range_ids:
-                move_id.late_fee_amount = late_fee_amount_range_ids.sorted(key="date_from", reverse=True)[0].amount
-            else:
-                move_id.late_fee_amount = move_id.journal_id.late_fee_amount_default or \
-                                       move_id.company_id.late_fee_amount_default or 0.0
+            move_id.late_fee_amount = late_fee_amount
     
     def _compute_paypro_id(self):
         for move in self:

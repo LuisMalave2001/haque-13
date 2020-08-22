@@ -7,6 +7,7 @@ from dateutil import tz
 
 class PakistanTaxReport(models.AbstractModel):
     _name = "report.pakistan_wht.pakistan_tax_report"
+    _description = "Pakistan Tax Report"
     _inherit = 'report.report_xlsx.abstract'
 
     def _get_invoices(self, from_date, to_date):
@@ -61,7 +62,12 @@ class PakistanTaxReport(models.AbstractModel):
 
         row = 1
         for invoice in invoices:
-            sheet.write(row, 1, invoice.partner_id.name, data_format)
+            name = []
+            if invoice.partner_id.first_name:
+                name.append(invoice.partner_id.first_name)
+            if invoice.partner_id.last_name:
+                name.append(invoice.partner_id.last_name)
+            sheet.write(row, 1, " ".join(name) or "", data_format)
             row += 1
 
         row = 1  
