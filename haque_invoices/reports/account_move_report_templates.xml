@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_document_inherit" inherit_id="account.report_invoice_document">
+        <div name="origin" position="after">
+            <div class="col-auto mw-100 mb-2" t-if="o.student_id" name="student_id">
+                <strong>Student:</strong>
+                <p class="m-0" t-field="o.student_id.name"/>
+            </div>
+            <div class="col-auto mw-100 mb-2" style="white-space: nowrap" t-if="o.student_id.grade_level_id" name="grade_level_id">
+                <strong>Grade Level:</strong>
+                <p class="m-0" t-field="o.student_id.grade_level_id.name"/>
+            </div>
+        </div>
+    </template>
+</odoo>

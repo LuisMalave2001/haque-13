@@ -42,5 +42,6 @@
         'views/account_move_templates.xml',
         'views/account_payment_import_views.xml',
         'wizards/account_payment_import_wizard_views.xml',
+        'reports/account_move_report_templates.xml',
     ]
 }
