@@ -5,6 +5,7 @@
         <field name="inherit_id" ref="account.view_move_form" />
         <field name="arch" type="xml">
             <group id="header_left_group" position="inside">
+                <field name="voucher_number" />
                 <field name="late_fee_amount" />
                 <field name="invoice_date_invalid" />
             </group>

@@ -33,6 +33,10 @@ class Invoice(models.Model):
         compute="_compute_due_amounts")
     student_facts_id = fields.Char(string="Student Fact ID",
         related="student_id.facts_id")
+    voucher_number = fields.Char(string="Voucher #",
+        readonly=True)
+    fiscal_year = fields.Char(string="Fiscal Year",
+        readonly=True)
 
     @api.depends('invoice_date', 'type')
     def _compute_late_fee_amount(self):
@@ -125,3 +129,35 @@ class Invoice(models.Model):
             if invoice.state == "posted":
                 invoice.sudo().post()
         _logger.info("Hola: ", self)
+
+    def post(self):
+        res = super(Invoice, self).post()
+        self.assign_voucher_number()
+        return res
+    
+    def assign_voucher_number(self):
+        sequence_obj = self.env["ir.sequence"]
+        for move in self.filtered(lambda m: not m.voucher_number and m.state == "posted"):
+            fiscalyear_last_month = int(move.company_id.fiscalyear_last_month)
+            move_month = move.date.month
+            fiscalyear_year = move.company_id.compute_fiscalyear_dates(move.date)["date_to"].year
+            fiscalyear_month = move_month - fiscalyear_last_month
+            if fiscalyear_month < 0:
+                fiscalyear_month = move_month + fiscalyear_last_month
+            year_str = str(fiscalyear_year)
+            month_str = str(fiscalyear_month).zfill(2)
+            sequence_code = "account.move.voucher.{}.{}".format(year_str, month_str)
+            code = sequence_obj.with_context(force_company=move.company_id.id).next_by_code(sequence_code)
+            if not code:
+                sequence = sequence_obj.sudo().create({
+                    "name": "Voucher " + year_str + "-" + month_str,
+                    "code": sequence_code,
+                    "company_id": move.company_id.id,
+                    "prefix": month_str + "-",
+                    "padding": 3,
+                    "number_increment": 1,
+                    "number_next_actual": 1,
+                })
+                code = sequence.next_by_id()
+            move.voucher_number = code
+            move.fiscal_year = year_str
