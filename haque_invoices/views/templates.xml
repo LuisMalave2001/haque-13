@@ -112,7 +112,6 @@
                                         <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
                                     </u>
                                 </t>
-                                <!--                                 <u>Monday, 2 March 2020</u> -->
                             </strong>
                         </td>
                     </tr>
@@ -129,26 +128,18 @@
             <section class="row border border-dark">
                 <table class="w-100">
                     <tr>
-                        <td>Late Fee Effective After:</td>
-                        <td>
-                            <t t-if="o.invoice_date_due">
-                                <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
-                            </t>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Challan Invalid After:</td>
-                        <td>
-                            <t t-if="o.invoice_date_invalid">
-                                <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_invalid)" />
-                            </t>
-                        </td>
-                    </tr>
-                    <tr>
                         <td>Issue Date:</td>
                         <td>
                             <t t-if="o.invoice_date">
                                 <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Due Date:</td>
+                        <td>
+                            <t t-if="o.invoice_date_due">
+                                <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
                             </t>
                         </td>
                     </tr>
@@ -318,7 +309,7 @@
                             <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date)"/>
                         </strong>
                     </p>
-                    <p class="mb0" align="center">
+                    <!-- <p class="mb0" align="center">
                         <strong><u>Mode of Payment</u></strong>
                     </p>
                     <ol class="ml16">
@@ -354,7 +345,7 @@
                         Thank you,
                         <br/>
                         Haque Academy
-                    </p>
+                    </p> -->
                 </section>
                 <section class="invoice-page">
                     <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
