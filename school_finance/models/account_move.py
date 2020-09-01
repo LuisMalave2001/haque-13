@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _, exceptions
 
 
 class AccountMove(models.Model):
@@ -11,8 +11,12 @@ class AccountMove(models.Model):
     family_id = fields.Many2one("res.partner", string="Family", domain=[('is_family', '=', True)])
 
     family_members_ids = fields.Many2many(related="family_id.member_ids")
-
     receivable_account_id = fields.Many2one("account.account", string="Receivable account", domain=[("user_type_id.type", "=", "receivable")])
+
+    is_in_debug_mode = fields.Boolean(compute="compute_is_in_debug_mode")
+
+    def compute_is_in_debug_mode(self):
+        self.is_in_debug_mode = self.env.user.has_group('base.group_no_one')
 
     def get_receivable_account_ids(self):
         return self.get_receivable_line_ids().mapped("account_id")
@@ -20,18 +24,30 @@ class AccountMove(models.Model):
     def get_receivable_line_ids(self):
         return self.mapped("line_ids").filtered(lambda line_id: line_id.account_id.user_type_id.type == 'receivable')
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals_list):
-        move_id = super().create(vals_list)
+        for vals in vals_list:
+            if "student_id" in vals and vals["student_id"]:
+                student_id = self.env["res.partner"].browse([vals["studen_id"]])
+                if student_id:
+                    if "student_grade_level" not in vals:
+                        vals["student_grade_level"] = student_id.grade_level_id.id
+                    if "homeroom" not in vals:
+                        vals["homeroom"] = student_id.homeroom
 
-        if move_id.student_id:
-            move_id.student_grade_level = move_id.student_id.grade_level_id
-            move_id.student_homeroom = move_id.student_id.homeroom
+        return super().create(vals_list)
 
-        return move_id
+    student_grade_level = fields.Many2one("school_base.grade_level", string="Grade level")
+    student_homeroom = fields.Char(string="Student homeroom")
 
-    student_grade_level = fields.Many2one("school_base.grade_level", readonly=True, string="Grade level")
-    student_homeroom = fields.Char(readonly=True, string="Student homeroom")
+    def compute_grade_and_homeroom(self):
+        self.ensure_one()
+
+        if self.student_id:
+            self.student_grade_level = self.student_id.grade_level_id
+            self.student_homeroom = self.student_id.homeroom
+        else:
+            raise exceptions.ValidationError(_("You cannot compute the homeroom if there is not student..."))
 
     def set_receivable_account(self):
         """ It uses receivable_account_id field to set autoamtically the receivable account """
@@ -41,4 +57,6 @@ class AccountMove(models.Model):
             receivable_line_id.ensure_one()
             if receivable_line_id and record.receivable_account_id:
                 receivable_line_id.account_id = record.receivable_account_id.id
+
+
 
