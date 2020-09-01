@@ -25,4 +25,17 @@
         <field name="list_price" eval="0.0"/>
         <field name="type">service</field>
     </record>
+
+    <record id="account_move_cron_assign_voucher" model="ir.cron">
+        <field name="name">Journal Entries: Assign Voucher Number</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="interval_number">1</field>
+        <field name="interval_type">months</field>
+        <field name="numbercall">1</field>
+        <field name="state">code</field>
+        <field name="active">0</field>
+        <field name="code">
+model.search([("state","=","posted"),("voucher_number","=",False)]).sorted(key="date").assign_voucher_number()
+        </field>
+    </record>
 </odoo>
