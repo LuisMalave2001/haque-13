@@ -54,7 +54,7 @@
                                 <table class="border w-100">
                                     <tr>
                                         <td class="text-right" style="width:100px;"><strong>Voucher # :<![CDATA[&nbsp;]]></strong></td>
-                                        <td> <span t-esc="o.voucher_number or ' '"/></td>
+                                        <td><span t-esc="o.voucher_number or ' '"/></td>
                                     </tr>
                                     <tr>
                                         <td class="text-right" style="width:100px;"><strong>Date :<![CDATA[&nbsp;]]></strong></td>
@@ -66,8 +66,11 @@
                         <table class="border w-100 mt16">
                             <tr>
                                 <td class="text-right" style="width:100px;vertical-align:top;"><strong>Narration :<![CDATA[&nbsp;]]></strong></td>
-                                <td t-if="o.narration"><span t-field="o.narration"/></td>
-                                <td t-else=""><![CDATA[&nbsp;]]></td>
+                                <td>
+                                    <t t-if="o.id in bank_payment_ids or o.id in cash_payment_ids"><div class="mt0 mb0" t-esc="o.line_ids[0].partner_id.name"/></t>
+                                    <t t-if="o.narration"><span t-field="o.narration"/></t>
+                                    <t t-if="o.id not in bank_payment_ids and o.id not in cash_payment_ids and not o.narration"><![CDATA[&nbsp;]]></t>
+                                </td>
                             </tr>
                         </table>
                         <table class="table table-sm table-bordered mt16">
