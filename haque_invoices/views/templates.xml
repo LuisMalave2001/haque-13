@@ -1,368 +1,254 @@
 <odoo>
     <template id="haque_invoices.report_invoice_document">
-        <t t-set="o" t-value="o.with_context(lang=lang)" />
+        <style>
+            .table-sm th, .table-sm td { padding: 0.2rem !important; padding-left: 0.6rem !important; padding-right: 0.6rem !important; }
+        </style>
+        <t t-set="o" t-value="o.with_context(lang=lang)"/>
         <div class="page" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
-            <t t-set="late_fee_product" t-value="o.env.ref('haque_invoices.late_fee_product')" />
-            <t t-set="late_fee_line" t-value="o.invoice_line_ids.filtered(lambda l: l.product_id.id == late_fee_product.product_variant_id.id)" />
+            <t t-set="late_fee_product" t-value="o.env.ref('haque_invoices.late_fee_product')"/>
+            <t t-set="late_fee_line" t-value="o.invoice_line_ids.filtered(lambda l: l.product_id.id == late_fee_product.product_variant_id.id)"/>
             <t t-if="late_fee_line">
-                <t t-set="late_fee_total" t-value="late_fee_line.price_total" />
-                <t t-set="advance_total" t-value="o.amount_total - late_fee_total" />
-                <t t-set="advance_untaxed" t-value="o.amount_untaxed - late_fee_line.price_subtotal" />
-                <t t-set="late_total" t-value="o.amount_total" />
+                <t t-set="late_fee_total" t-value="late_fee_line.price_total"/>
+                <t t-set="advance_total" t-value="o.amount_total - late_fee_total"/>
+                <t t-set="advance_untaxed" t-value="o.amount_untaxed - late_fee_line.price_subtotal"/>
+                <t t-set="late_total" t-value="o.amount_total"/>
             </t>
             <t t-else="">
                 <t t-set="late_fee_total" t-value="o.late_fee_amount * (1 + sum(late_fee_product.taxes_id.mapped('amount'))/100) if o.amount_tax else o.late_fee_amount"/>
-                <t t-set="advance_total" t-value="o.amount_total" />
-                <t t-set="advance_untaxed" t-value="o.amount_untaxed" />
-                <t t-set="late_total" t-value="advance_total + late_fee_total" />
+                <t t-set="advance_total" t-value="o.amount_total"/>
+                <t t-set="advance_untaxed" t-value="o.amount_untaxed"/>
+                <t t-set="late_total" t-value="advance_total + late_fee_total"/>
             </t>
-            <t t-set="advance_tax" t-value="advance_total - advance_untaxed" />
+            <t t-set="advance_tax" t-value="advance_total - advance_untaxed"/>
             <t t-set="late_fee_has_tax" t-value="late_fee_line.tax_ids if late_fee_line else o.amount_tax"/>
-            <section class="row border border-dark">
-                <table class="w-100">
-                    <tr>
-                        <td>
-                            <b t-field="o.partner_id" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>
-                                F/O
-                                <span t-field="o.student_id" />
-                            </b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>
-                                (Class
-                                <span t-field="o.student_grade_level" />
-                                )
-                            </b>
-                        </td>
-                    </tr>
-                </table>
-            </section>
-            <section class="row border border-dark text-center">
-                <table class="w-100">
-                    <tr>
-                        <td>
-                            <span t-field="o.company_id" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <b>Habib Bank Limited - All Branches</b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <t t-set="main_account" t-value="False" />
-                        <t t-if="o.company_id.main_account">
-                            <t t-set="main_account" t-value="o.company_id.main_account" />
-                        </t>
-                        <t t-if="o.journal_id.main_account">
-                            <t t-set="main_account" t-value="o.journal_id.main_account" />
-                        </t>
-                        <td>
-                            Collection A/C:
-                            <t t-esc="main_account" />
-                        </td>
-                    </tr>
-                </table>
-            </section>
-            <section class="row border border-dark">
-                <table class="w-100 text-center">
-                    <tr>
-                        <td>
-                            <strong>
-                                Voucher No.:
-                                <span t-field="o.name" />
-                            </strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <strong>
-                                ID No.:
-                                <span t-field="o.student_id.facts_id" />
-                            </strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <strong>
-                                PayPro/ConnectPay ID.:
-                                <span t-esc="o.journal_id.paypro_prefix"/><span t-esc="o.student_id.facts_id.zfill(6)" />
-                            </strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <strong>
-                                <u>Late Fee Effective After</u>
-                            </strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <strong>
-                                <t t-if="o.invoice_date_due">
-                                    <u>
-                                        <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
-                                    </u>
-                                </t>
-                            </strong>
-                        </td>
-                    </tr>
-                </table>
-            </section>
-            <section class="row border border-dark">
-                <table class="w-100">
-                    <tr>
-                        <td>Student Name:<br/><span t-field="o.student_id"/></td>
-                        <td>Class: <span t-field="o.student_grade_level.name"/></td>
-                    </tr>
-                </table>
-            </section>
-            <section class="row border border-dark">
-                <table class="w-100">
-                    <tr>
-                        <td>Issue Date:</td>
-                        <td>
-                            <t t-if="o.invoice_date">
-                                <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
-                            </t>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Due Date:</td>
-                        <td>
+            <div align="center" class="mb8">
+                <img class="img-fluid" src="/haque_invoices/static/src/img/school_logo.png" style="max-height:140"/>
+            </div>
+            <table class="table table-sm table-borderless border border-dark mb0 text-center" cellpadding="20">
+                <tr>
+                    <td><span t-field="o.company_id"/></td>
+                </tr>
+                <tr>
+                    <td><b>Habib Bank Limited - All Branches</b></td>
+                </tr>
+                <tr>
+                    <t t-set="main_account" t-value="False"/>
+                    <t t-if="o.company_id.main_account">
+                        <t t-set="main_account" t-value="o.company_id.main_account"/>
+                    </t>
+                    <t t-if="o.journal_id.main_account">
+                        <t t-set="main_account" t-value="o.journal_id.main_account"/>
+                    </t>
+                    <td>Collection A/C: <t t-esc="main_account"/></td>
+                </tr>
+            </table>
+            <table class="table table-sm table-borderless border border-dark mt0 text-center">
+                <tr>
+                    <td><strong>Voucher No.: <span t-field="o.name"/></strong></td>
+                </tr>
+                <tr>
+                    <td><strong>ID No.: <span t-field="o.student_id.facts_id"/></strong></td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>
+                            PayPro/ConnectPay ID.: <span t-esc="o.journal_id.paypro_prefix"/><span t-esc="o.student_id.facts_id.zfill(6)"/>
+                        </strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong><u>Late Fee Effective After</u></strong></td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>
                             <t t-if="o.invoice_date_due">
-                                <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)" />
+                                <u><t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)"/></u>
                             </t>
-                        </td>
-                    </tr>
-                </table>
-            </section>
-            <section class="row border border-dark">
-                <table class="w-100">
-                    <tr>
-                        <td colspan="2">
-                            Fees of
-                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Tuition Fee:</td>
-                        <td>
-                            <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Total Advance Tax</td>
-                        <td>
-                            <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                        </td>
-                    </tr>
-                    <!-- Payment -->
-                    <t t-set="payments_vals" t-value="o.sudo()._get_reconciled_info_JSON_values()"/>
-                    <t t-if="len(payments_vals) &gt; 0">
-                        <tr class="border-black">
-                            <td colspan="2"> </td>
-                        </tr>
-                        <t t-foreach="payments_vals" t-as="payment_vals">
-                            <tr>
-                                <td>
-                                    <i class="oe_form_field text-right oe_payment_label">Less payment on <t t-esc="payment_vals['date']" t-options="{'widget': 'date'}"/></i>
-                                </td>
-                                <td >
-                                    ( <span t-esc="payment_vals['amount']" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/> )
-                                </td>
-                            </tr>
+                        </strong>
+                    </td>
+                </tr>
+            </table>
+            <table class="table table-sm table-borderless border border-dark mb0">
+                <tr>
+                    <td style="font-size:1.5rem;"><b t-field="o.partner_id"/></td>
+                </tr>
+                <tr>
+                    <td><b>F/O <span t-field="o.student_id"/></b></td>
+                </tr>
+                <tr>
+                    <td><b>(Class <span t-field="o.student_grade_level"/>)</b></td>
+                </tr>
+            </table>
+            <table class="table table-sm table-borderless border border-dark mt0 mb0">
+                <tr>
+                    <td>Student Name:<br/><span t-field="o.student_id"/></td>
+                    <td>Class: <span t-field="o.student_grade_level.name"/></td>
+                </tr>
+            </table>
+            <table class="table table-sm table-borderless border border-dark mt0 mb0">
+                <tr>
+                    <td>Issue Date:</td>
+                    <td>
+                        <t t-if="o.invoice_date">
+                            <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)"/>
                         </t>
-                        <tr class="border-black">
-                            <td colspan="2"> </td>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Due Date:</td>
+                    <td>
+                        <t t-if="o.invoice_date_due">
+                            <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date_due)"/>
+                        </t>
+                    </td>
+                </tr>
+            </table>
+            <table class="table table-sm table-borderless border border-dark mt0 mb0">
+                <tr>
+                    <td colspan="2">
+                        Fees of <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date)"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tuition Fee:</td>
+                    <td>
+                        <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Total Advance Tax</td>
+                    <td>
+                        <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                    </td>
+                </tr>
+                <t t-set="payments_vals" t-value="o.sudo()._get_reconciled_info_JSON_values()"/>
+                <t t-if="len(payments_vals) &gt; 0">
+                    <tr class="border-black">
+                        <td colspan="2"> </td>
+                    </tr>
+                    <t t-foreach="payments_vals" t-as="payment_vals">
+                        <tr>
+                            <td>
+                                <i class="oe_form_field text-right oe_payment_label">Less payment on <t t-esc="payment_vals['date']" t-options="{'widget': 'date'}"/></i>
+                            </td>
+                            <td>
+                                ( <span t-esc="payment_vals['amount']" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/> )
+                            </td>
                         </tr>
                     </t>
-                    <tr>
-                        <td>Amount Within Due Date:</td>
-                        <td>
-                            <div style="border-top: 3px solid black;">
-<!--                                 <span t-esc="advance_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" /> -->
-                                <t t-if="len(payments_vals) &gt; 0">
-                                    <span t-esc="o.amount_residual" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                </t>
-                                <t t-else="">
-                                    <span t-esc="advance_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                </t>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </section>
-            <section class="row border border-dark">
-                <table class="w-100">
-                    <tr>
-                        <td>Late Fee<t t-if="late_fee_has_tax"> with Tax</t>:</td>
-                        <td>
-                            <span t-esc="late_fee_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <u>
-                                <strong>Amount With Late Fee:</strong>
-                            </u>
-                        </td>
-                        <td>
-                            <div class="border border-dark">
-<!--                                 <t t-esc="late_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" /> -->
-                                <t t-if="len(payments_vals) &gt; 0">
-                                    <span t-esc="o.amount_residual + late_fee_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                </t>
-                                <t t-else="">
-                                    <t t-esc="late_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                                </t>
-                                
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-            </section>
-            <section class="row border border-dark">
-                <table class="w-100">
-                    <tr t-if="o.partner_id.sale_status_wht_id not in [False, 'filler']">
-                        <td colspan="3">5% Advance Tax on CNIC</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <t t-if="o.partner_id.sale_status_wht_id not in [False, 'filler']" t-esc="o.partner_id.vat" />
-                        </td>
-                        <td>
-                            <div class="text-center w-100">Fee</div>
-                        </td>
-                        <td>
-                            <div class="text-center w-100">Tax</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Current Fee
-                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date)" />
-                        </td>
-                        <td style="padding-left: 6px;padding-right: 6px;">
-                            <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                        </td>
-                        <td style="padding-left: 6px;padding-right: 6px;">
-                            <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <strong>
-                                <u>Total Advance Tax:</u>
-                            </strong>
-                        </td>
-                        <td colspan="2">
-                            <div class="border border-dark">
-                                <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}" />
-                            </div>
-                        </td>
-                    </tr>                
-                </table>
-            </section>
-            <section class="row border border-dark text-center">
-                <div class="text-center w-100">
-                    <t t-if="modo">
-                        <t t-esc="modo" />
-                    </t>
-                </div>
-            </section>
+                </t>
+                <tr>
+                    <td>Amount Within Due Date:</td>
+                    <td>
+                        <div style="border-top: 3px solid black;">
+                            <t t-if="len(payments_vals) &gt; 0">
+                                <span t-esc="o.amount_residual" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                            </t>
+                            <t t-else="">
+                                <span t-esc="advance_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                            </t>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table class="table table-sm table-borderless border border-dark mt0 mb0">
+                <tr>
+                    <td>Late Fee<t t-if="late_fee_has_tax"> with Tax</t>:</td>
+                    <td><span t-esc="late_fee_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                </tr>
+                <tr>
+                    <td>
+                        <u><strong>Amount With Late Fee:</strong></u>
+                    </td>
+                    <td class="border border-dark">
+                        <t t-if="len(payments_vals) &gt; 0">
+                            <span t-esc="o.amount_residual + late_fee_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                        </t>
+                        <t t-else="">
+                            <t t-esc="late_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                        </t>
+                    </td>
+                </tr>
+            </table>
+            <table class="table table-sm table-borderless border border-dark mt0 mb0">
+                <tr t-if="o.partner_id.sale_status_wht_id not in [False, 'filler']">
+                    <td colspan="3">5% Advance Tax on CNIC</td>
+                </tr>
+                <tr>
+                    <td>
+                        <t t-if="o.partner_id.sale_status_wht_id not in [False, 'filler']" t-esc="o.partner_id.vat"/>
+                    </td>
+                    <td>
+                        <div class="text-center w-100">Fee</div>
+                    </td>
+                    <td>
+                        <div class="text-center w-100">Tax</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Current Fee
+                        <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date)"/>
+                    </td>
+                    <td style="padding-left: 6px;padding-right: 6px;">
+                        <span t-esc="advance_untaxed" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                    </td>
+                    <td style="padding-left: 6px;padding-right: 6px;">
+                        <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>
+                            <u>Total Advance Tax:</u>
+                        </strong>
+                    </td>
+                    <td colspan="2" class="border border-dark">
+                          <span t-esc="advance_tax" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                    </td>
+                </tr>                
+            </table>
+            <table class="table table-sm table-borderless border border-dark mt0 mb0 text-center">
+                <tr>
+                    <td>
+                        <t t-if="modo">
+                            <t t-esc="modo"/>
+                        </t>
+                    </td>
+                </tr>
+            </table>
+            <div align="center" class="mt8">
+                <img class="img-fluid" src="/haque_invoices/static/src/img/collection_partners.png" style="max-height:120px"/>
+            </div>
         </div>
     </template>
 
     <template id="haque_invoices.report_invoice_with_copy">
-        <div class="article o_report_layout_standard position-relative" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
+        <div class="article o_report_layout_standard" t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id">
             <t t-set="o" t-value="o.with_context(lang=lang)"/>
-            <style>
-                .invoice-page{
-                    width: 25%;
-                    margin-left: 1.5cm;
-                }
-            </style>
-            <div class="row">
-                <section class="col-4">
-                    <div align="center" class="mb4">
-                        <img class="img-fluid" src="/haque_invoices/static/src/img/invoice_logo.png"/>
-                    </div>
-                    <p>
-                        <t t-if="o.invoice_date">
-                            <t t-esc="'{dt:%a}, {dt.day} {dt:%b} {dt.year}'.format(dt=o.invoice_date)"/>
-                        </t>
-                    </p>
-                    <p>
-                        Dear Parents,
-                        <br/>
-                        Please find herewith the fee challan for
-                        <strong>
-                            <t t-esc="'{dt:%b} {dt.year} through {dt:%b} {dt.year}'.format(dt=o.invoice_date)"/>
-                        </strong>
-                    </p>
-                    <!-- <p class="mb0" align="center">
-                        <strong><u>Mode of Payment</u></strong>
-                    </p>
-                    <ol class="ml16">
-                        <li>
-                            Cash payable to any HBL branch all over Pakistan
-                        </li>
-                        <li>
-                            Cheque or pay order in favor of Haque Academy payable to any branch of HBL in Pakistan
-                        </li>
-                        <li>
-                            Pay via HBL Internet banking to Haque Academy HBL account
-                        </li>
-                        <li>
-                            Pay via Inter-Bank Funds Transfer (IBFT) using ATM, Internet Banking, Mobile Banking
-                        </li>
-                        <li>
-                            Pay via HBL KONNECT App.
-                        </li>
-                        <li>
-                            Web/Mobile Banking via PayPro / Connect Pay (only for partner banks, additional convenience charge Rs.70)
-                        </li>
-                        <li>
-                            Cash Payable at nearest TCS Center on presenting PayPro / Connect Pay ID as mentioned on voucher (additional convenience charge Rs.70)
-                        </li>
-                        <li>
-                            No payment of fees, cash or cheque, will be accepted at Haque Academy
-                        </li>
-                    </ol>
-                    <p>
-                        For queries please contact accounts@haqueacademy.edu.pk
-                    </p>
-                    <p>
-                        Thank you,
-                        <br/>
-                        Haque Academy
-                    </p> -->
-                </section>
-                <section class="invoice-page">
-                    <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
-                        <t t-set="modo" t-value="'Depositor\'s Copy'"/>
-                    </t>
-                </section>
-                <img style="position:absolute;left:10.72in;top:0.7in;" src="/haque_invoices/static/src/img/stamp.png"/>
-                <t t-if="o.invoice_payment_state == 'paid'">
-                    <img style="position:absolute;left:7.9in;top:5.5in;opacity:0.5;" width="200"  src="/haque_invoices/static/src/img/paid.png"/>
-                    <img style="position:absolute;left:13.0in;top:5.5in;opacity:0.5;" width="200"  src="/haque_invoices/static/src/img/paid.png"/>
-                </t>
-                <section class="invoice-page">
-                    <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
-                        <t t-set="modo" t-value="'Bank\'s Copy'"/>
-                    </t>
-                </section>
-            </div>
+            <img style="position:absolute;left:8.5in;top:2in;" src="/haque_invoices/static/src/img/stamp.png"/>
+            <t t-if="o.invoice_payment_state == 'paid'">
+                <img style="position:absolute;left:4.9in;top:8in;opacity:0.5;" width="200" src="/haque_invoices/static/src/img/paid.png"/>
+                <img style="position:absolute;left:11.5in;top:8in;opacity:0.5;" width="200" src="/haque_invoices/static/src/img/paid.png"/>
+            </t>
+            <table class="w-100">
+                <tr>
+                  <td width="14%"/>
+                  <td width="35%">
+                      <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
+                          <t t-set="modo" t-value="'Depositor\'s Copy'"/>
+                      </t>
+                  </td>
+                  <td width="2%"/>
+                  <td width="35%">
+                      <t t-call="haque_invoices.report_invoice_document" t-lang="lang">
+                          <t t-set="modo" t-value="'Bank\'s Copy'"/>
+                      </t>
+                  </td>
+                  <td width="14%"/>
+                </tr>
+            </table>
         </div>
     </template>
 </odoo>
