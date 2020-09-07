@@ -2,12 +2,12 @@
 <odoo>
 
     <report
-        id="action_pakistan_tax_report"
-        model="account.payment"
+        id="action_res_partner_report_tax"
+        model="res.partner"
         string="Generate Tax Report xlsx"
         report_type="xlsx"
-        name="pakistan_wht.pakistan_tax_report"
-        file="pakistan_tax_report"
+        name="pakistan_wht.res_partner_report_tax"
+        file="pakistan_wht.res_partner_report_tax"
         attachment_use="False"
         menu="False"/>
 
