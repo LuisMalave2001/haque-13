@@ -95,7 +95,7 @@ class Contact(models.Model):
     middle_name = fields.Char("Middle Name")
     last_name = fields.Char("Last Name")
 
-    date_of_birth = fields.Date()
+    date_of_birth = fields.Date('Date of birth')
 
     # Fields for current student status, grade leve, status, etc...
     school_code_id = fields.Many2one('school_base.school_code', string='Current school code')
