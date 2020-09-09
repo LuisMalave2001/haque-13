@@ -23,14 +23,14 @@ class SaleOrderForStudents(models.Model):
         compute="_compute_late_fee_amount")
     journal_id = fields.Many2one("account.journal", string="Journal", domain="[('type', '=', 'sale')]")
 
-    def _create_invoices(self, grouped=False, final=False):
-        all_moves = super()._create_invoices(grouped, final)
-        for order in self:
-            order.invoice_ids.write({
-                "invoice_date_invalid": order.invoice_date_invalid,
-                "invoice_date_due": order.invoice_date_due,
-            })
-        return all_moves
+    # def _create_invoices(self, grouped=False, final=False):
+    #     all_moves = super()._create_invoices(grouped, final)
+    #     for order in self:
+    #         order.invoice_ids.write({
+    #             "invoice_date_invalid": order.invoice_date_invalid,
+    #             "invoice_date_due": order.invoice_date_due,
+    #         })
+    #     return all_moves
     
     def _compute_late_fee_amount(self):
         for order in self:
