@@ -74,7 +74,7 @@
                     <td style="font-size:1.5rem;"><b t-field="o.partner_id"/></td>
                 </tr>
                 <tr>
-                    <td><b>F/O <span t-field="o.student_id"/></b></td>
+                    <td><b>P/O <span t-field="o.student_id"/></b></td>
                 </tr>
                 <tr>
                     <td><b>(Class <span t-field="o.student_grade_level"/>)</b></td>
