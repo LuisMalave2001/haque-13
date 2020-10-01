@@ -21,12 +21,24 @@ class TuitionPlanInstallment(models.Model):
         relation="plan_product_plan_installment_rel",
         help="Products to include in order and/or invoice")
     
+    def _get_end_date(self):
+        self.ensure_one()
+        installments = self.plan_id.installment_ids.filtered(lambda i: i.product_ids)
+        installment_ids = installments.ids
+        if self.id == installment_ids[-1]:
+            return self.plan_id.period_date_to
+        next_installment = installments[installment_ids.index(self.id) + 1]
+        return next_installment.date - relativedelta(days=1)
+    
     def execute(self):
         make_sale_obj = self.env["res.partner.make.sale"]
+        make_sale = make_sale_obj
         for installment in self.filtered(lambda i: i.plan_id.active and i.product_ids):
             plan = installment.plan_id
-            students = plan.partner_ids | plan.default_partner_ids
+            students = self._context.get("students") or (plan.partner_ids | plan.default_partner_ids)
             students = students.filtered(lambda s: s.grade_level_id in plan.grade_level_ids and s.student_status == "Enrolled")
+            if not students:
+                continue
             invoice_due_date = False
             if not plan.payment_term_id and plan.first_due_date:
                 invoice_date_due_day = plan.first_due_date.day
@@ -44,6 +56,8 @@ class TuitionPlanInstallment(models.Model):
                 "journal_id": False,
                 "order_line_ids": order_line_ids,
                 "payment_term_id": plan.payment_term_id.id,
+                "period_start": installment.date,
+                "period_end": installment._get_end_date(),
                 "use_student_payment_term": plan.use_student_payment_term,
             }
             make_sale = make_sale_obj.with_context(active_ids=students.ids).create(vals)
@@ -73,6 +87,7 @@ class TuitionPlanInstallment(models.Model):
                                     "price_unit": min(-amount * discounts[index].percentage / 100, sale.amount_total),
                                 })]
                             })
+            automation = self._context.get("automation") or plan.automation
             if plan.automation in ["sales_order", "draft_invoice", "posted_invoice"]:
                 for sale in make_sale.sales_ids:
                     sale.action_confirm()
@@ -85,3 +100,4 @@ class TuitionPlanInstallment(models.Model):
                                     line.analytic_account_id = product.analytic_account_id.id
                         if plan.automation == "posted_invoice":
                             invoices.action_post()
+        return make_sale.sales_ids
