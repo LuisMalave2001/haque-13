@@ -14,7 +14,7 @@ class AccountMoveReportVoucher(models.AbstractModel):
         bank_payment_ids = []
         cash_payment_ids = []
         journal_ids = []
-        checks = {}
+        payments = {}
         unposted_moves = moves.filtered(lambda m: m.state != "posted")
         if unposted_moves:
             raise ValidationError("Cannot print voucher for unposted entries: " + ", ".join(str(id) for id in unposted_moves.ids))
@@ -28,11 +28,7 @@ class AccountMoveReportVoucher(models.AbstractModel):
                         bank_payment_ids.append(move.id)
                     else:
                         cash_payment_ids.append(move.id)
-                if matched_payment.check_number:
-                    checks[move.id] = {
-                        "number": matched_payment.check_number,
-                        "date": matched_payment.payment_date,
-                    }
+                payments[move.id] = matched_payment
             else:
                 journal_ids.append(move.id)
 
@@ -44,5 +40,5 @@ class AccountMoveReportVoucher(models.AbstractModel):
             "bank_payment_ids": bank_payment_ids,
             "cash_payment_ids": cash_payment_ids,
             "journal_ids": journal_ids,
-            "checks": checks,
+            "payments": payments,
         }

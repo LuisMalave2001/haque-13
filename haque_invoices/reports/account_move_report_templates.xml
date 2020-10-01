@@ -39,11 +39,11 @@
                                 <table class="border w-100">
                                     <tr>
                                         <td class="text-right" style="width:100px;"><strong>Cheque # :<![CDATA[&nbsp;]]></strong></td>
-                                        <td><span t-esc="checks.get(o.id, {}).get('number', ' ')"/></td>
+                                        <td><span t-esc="payments.get(o.id) and payments[o.id].check_number or ' '"/></td>
                                     </tr>
                                     <tr>
                                         <td class="text-right" style="width:100px;"><strong>Date :<![CDATA[&nbsp;]]></strong></td>
-                                        <t t-set="check_date" t-value="checks.get(o.id, {}).get('date')"/>
+                                        <t t-set="check_date" t-value="payments.get(o.id) and payments[o.id].check_number and payments[o.id].payment_date"/>
                                         <td t-if="check_date"><span  t-esc="check_date" t-options="{'widget': 'date', 'format': 'dd/MM/yyyy'}"/></td>
                                         <td t-else=""><![CDATA[&nbsp;]]></td>
                                     </tr>
@@ -67,9 +67,24 @@
                             <tr>
                                 <td class="text-right" style="width:100px;vertical-align:top;"><strong>Narration :<![CDATA[&nbsp;]]></strong></td>
                                 <td>
-                                    <t t-if="o.id in bank_payment_ids or o.id in cash_payment_ids"><div class="mt0 mb0" t-esc="o.line_ids[0].partner_id.name"/></t>
-                                    <t t-if="o.narration"><span t-field="o.narration"/></t>
-                                    <t t-if="o.id not in bank_payment_ids and o.id not in cash_payment_ids and not o.narration"><![CDATA[&nbsp;]]></t>
+                                    <t class="mt0 mb0" t-if="o.id in bank_payment_ids or o.id in cash_payment_ids">
+                                        <div class="mt0 mb0">
+                                            <span t-if="payments[o.id].partner_type == 'supplier'">Vendor:</span>
+                                            <span t-else="">Customer:</span>
+                                            <span t-esc="payments[o.id].partner_id.name"/>
+                                        </div>
+                                        <div class="mt0 mb0" t-if="payments[o.id].communication" t-esc="payments[o.id].communication"/>
+                                    </t>
+                                    <t class="mt0 mb0" t-if="o.type != 'entry'">
+                                        <div class="mt0 mb0">
+                                            <span t-if="'in_' in o.type">Vendor:</span>
+                                            <span t-else="">Customer:</span>
+                                            <span t-field="o.partner_id.name"/>
+                                        </div>
+                                        <div class="mt0 mb0" t-if="o.ref" t-field="o.ref"/>
+                                    </t>
+                                    <div class="mt0 mb0" t-if="o.narration" t-field="o.narration"/>
+                                    <t t-if="o.id not in bank_payment_ids and o.id not in cash_payment_ids and not o.narration and o.type == 'entry'"><![CDATA[&nbsp;]]></t>
                                 </td>
                             </tr>
                         </table>

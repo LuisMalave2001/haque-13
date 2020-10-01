@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="paper_format_school_leaving" model="report.paperformat">
+        <field name="name">School Leaving Paper Format</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">40</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">5</field>
+        <field name="margin_right">5</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">35</field>
+        <field name="dpi">60</field>
+    </record>
+
+    <report
+        id="action_res_partner_report_school_leaving"
+        model="res.partner"
+        string="School Leaving"
+        report_type="qweb-pdf"
+        name="school_leaving_report.res_partner_report_school_leaving"
+        file="school_leaving_report.res_partner_report_school_leaving"
+        paperformat="paper_format_school_leaving"/>
+</odoo>
