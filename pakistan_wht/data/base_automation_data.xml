@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_move_automation_create_wht_bill" model="base.automation">
+        <field name="name">Create WHT on Cash Basis</field>
+        <field name="model_id" ref="account.model_account_move"/>
+        <field name="trigger">on_write</field>
+        <field name="trigger_field_ids" eval="[(6,0,[ref('account.field_account_move__state')])]"/>
+        <field name="filter_domain">[('journal_id.name','ilike','Cash Basis')]</field>
+        <field name="state">code</field>
+        <field name="code">record.create_wht_bil()
+        </field>
+    </record>
+
+</odoo>
+
