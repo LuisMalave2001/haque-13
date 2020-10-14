@@ -27,6 +27,8 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'data/base_automation_data.xml',
+        'views/res_company_views.xml',
         'wizards/pakistan_tax_report_wizard_views.xml',
         'wizards/res_partner_report_tax_wizard_views.xml',
         'reports/pakistan_tax_reports.xml',
