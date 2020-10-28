@@ -21,6 +21,7 @@ class AccountMove(models.Model):
 
             tax_amount = 0
             origin_bill = ""
+            # import pdb; pdb.set_trace()
             for line in self.line_ids.filtered(lambda x: x.account_id.name == 'Tax Payable'):
                 tax_amount += line.debit
                 origin_bill = line.name
@@ -28,7 +29,7 @@ class AccountMove(models.Model):
                     "type": "in_invoice",
                     "partner_id": vendor_id.id,
                     "journal_id": tax_journal_id.id,
-                    "ref": "Automated Tax Bill for "+ origin_bill,
+                    "ref": "Tax Bill for "+ origin_bill +" (Payment Ref: "+ self.ref +")",
                 })
             move_data.setdefault(bill_id.id, {})
             bill_line = self.env["account.move.line"].sudo().create({
