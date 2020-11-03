@@ -21,40 +21,53 @@ class AccountMove(models.Model):
 
             tax_amount = 0
             origin_bill = ""
-            # import pdb; pdb.set_trace()
-            for line in self.line_ids.filtered(lambda x: x.account_id.name == 'Tax Payable'):
+            
+            # setting default account to be search
+            transition_account_name = "Tax Payable"
+            
+            # getting the set transition account in account.tax
+            for line in self.line_ids:
+                transition_account = self.env["account.tax"].search([("name","=",line.name)])
+                if transition_account:
+                    transition_account_name = transition_account.cash_basis_transition_account_id.name
+                    break
+
+            for line in self.line_ids.filtered(lambda x: x.account_id.name == transition_account_name):
                 tax_amount += line.debit
                 origin_bill = line.name
-            bill_id = self.env["account.move"].sudo().create({
-                    "type": "in_invoice",
-                    "partner_id": vendor_id.id,
-                    "journal_id": tax_journal_id.id,
-                    "ref": "Tax Bill for "+ origin_bill +" (Payment Ref: "+ self.ref +")",
-                })
-            move_data.setdefault(bill_id.id, {})
-            bill_line = self.env["account.move.line"].sudo().create({
-                    "move_id":bill_id.id,
-                    "product_id":product_id.id,
-                    "account_id":product_id.property_account_expense_id.id,
-                    "quantity": 1,
-                })
-            bill_line._onchange_product_id()
-            move_data[bill_id.id][bill_line.id] = {
-                    "name": bill_line.name + "\n" + " (for " + origin_bill + ")",
-                    "price_unit": tax_amount,
-                }
-            for move_id, created_lines in move_data.items():
-                move = self.env["account.move"].browse(move_id)
-                invoice_line_ids = []
-                for line in move.invoice_line_ids:
-                    if line.id in created_lines:
-                        invoice_line_ids.append((1, line.id, created_lines[line.id]))
-                    else:
-                        invoice_line_ids.append((1, line.id, {
-                            "name": line.name,
-                            "account_id": line.account_id.id,
-                        }))
-                move.sudo().write({"invoice_line_ids": invoice_line_ids})
+            
+            # will not create wht bill if the tax amount is zero
+            if tax_amount > 0:
+                bill_id = self.env["account.move"].sudo().create({
+                        "type": "in_invoice",
+                        "partner_id": vendor_id.id,
+                        "journal_id": tax_journal_id.id,
+                        "ref": "Tax Bill for "+ origin_bill +" (Payment Ref: "+ self.ref +")",
+                    })
+                move_data.setdefault(bill_id.id, {})
+                bill_line = self.env["account.move.line"].sudo().create({
+                        "move_id":bill_id.id,
+                        "product_id":product_id.id,
+                        "account_id":product_id.property_account_expense_id.id,
+                        "quantity": 1,
+                    })
+                bill_line._onchange_product_id()
+                move_data[bill_id.id][bill_line.id] = {
+                        "name": bill_line.name + "\n" + " (for " + origin_bill + ")",
+                        "price_unit": tax_amount,
+                    }
+                for move_id, created_lines in move_data.items():
+                    move = self.env["account.move"].browse(move_id)
+                    invoice_line_ids = []
+                    for line in move.invoice_line_ids:
+                        if line.id in created_lines:
+                            invoice_line_ids.append((1, line.id, created_lines[line.id]))
+                        else:
+                            invoice_line_ids.append((1, line.id, {
+                                "name": line.name,
+                                "account_id": line.account_id.id,
+                            }))
+                    move.sudo().write({"invoice_line_ids": invoice_line_ids})
 
 
     @api.model_create_multi
