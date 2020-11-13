@@ -48,7 +48,6 @@ class TuitionPlanInstallment(models.Model):
             for product in installment.product_ids:
                 order_line_ids.append((0, 0, product._prepare_order_line_vals()))
             vals = {
-                "company_id": plan.company_id.id,
                 "invoice_date": installment.date,
                 "invoice_date_due": invoice_due_date,
                 "separate_by_financial_responsability": True,
@@ -60,7 +59,7 @@ class TuitionPlanInstallment(models.Model):
                 "period_end": installment._get_end_date(),
                 "use_student_payment_term": plan.use_student_payment_term,
             }
-            make_sale = make_sale_obj.with_context(active_ids=students.ids).create(vals)
+            make_sale = make_sale_obj.with_context(allowed_company_ids=[plan.company_id.id], active_ids=students.ids).create(vals)
             for sale in make_sale.sales_ids:
                 if plan.discount_ids:
                     children = sale.family_id.member_ids\
@@ -88,16 +87,16 @@ class TuitionPlanInstallment(models.Model):
                                 })]
                             })
             automation = self._context.get("automation") or plan.automation
-            if plan.automation in ["sales_order", "draft_invoice", "posted_invoice"]:
+            if automation in ["sales_order", "draft_invoice", "posted_invoice"]:
                 for sale in make_sale.sales_ids:
                     sale.action_confirm()
-                    if plan.automation in ["draft_invoice", "posted_invoice"]:
+                    if automation in ["draft_invoice", "posted_invoice"]:
                         invoices = sale._create_invoices(grouped=True)
                         invoice_lines = invoices.invoice_line_ids
                         for product in installment.product_ids:
                             for line in invoice_lines:
                                 if line.price_unit >= 0 and product.product_id == line.product_id and product.analytic_account_id:
                                     line.analytic_account_id = product.analytic_account_id.id
-                        if plan.automation == "posted_invoice":
+                        if automation == "posted_invoice":
                             invoices.action_post()
         return make_sale.sales_ids
