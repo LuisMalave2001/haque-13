@@ -35,14 +35,13 @@ class AccountMove(models.Model):
             for line in self.line_ids.filtered(lambda x: x.account_id.name == transition_account_name):
                 tax_amount += line.debit
                 origin_bill = line.name
-            
             # will not create wht bill if the tax amount is zero
             if tax_amount > 0:
                 bill_id = self.env["account.move"].sudo().create({
                         "type": "in_invoice",
                         "partner_id": vendor_id.id,
                         "journal_id": tax_journal_id.id,
-                        "ref": "Tax Bill for "+ origin_bill +" (Payment Ref: "+ self.ref +")",
+                        "ref": "Tax Bill for "+ origin_bill +" (Journal Ref: "+ self.name +")",
                     })
                 move_data.setdefault(bill_id.id, {})
                 bill_line = self.env["account.move.line"].sudo().create({
