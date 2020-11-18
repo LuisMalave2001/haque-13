@@ -74,6 +74,9 @@
                                             <span t-esc="payments[o.id].partner_id.name"/>
                                         </div>
                                         <div class="mt0 mb0" t-if="payments[o.id].communication" t-esc="payments[o.id].communication"/>
+                                        <t t-foreach="payments[o.id].reconciled_invoice_ids" t-as="invoice">
+                                            <div t-if="invoice.narration" t-field="invoice.narration"/>
+                                        </t>
                                     </t>
                                     <t class="mt0 mb0" t-if="o.type != 'entry'">
                                         <div class="mt0 mb0">
