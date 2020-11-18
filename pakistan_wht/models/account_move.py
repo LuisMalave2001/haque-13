@@ -35,6 +35,7 @@ class AccountMove(models.Model):
             for line in self.line_ids.filtered(lambda x: x.account_id.name == transition_account_name):
                 tax_amount += line.debit
                 origin_bill = line.name
+                vendor_name = line.partner_id.name
             # will not create wht bill if the tax amount is zero
             if tax_amount > 0:
                 bill_id = self.env["account.move"].sudo().create({
@@ -52,7 +53,7 @@ class AccountMove(models.Model):
                     })
                 bill_line._onchange_product_id()
                 move_data[bill_id.id][bill_line.id] = {
-                        "name": bill_line.name + "\n" + " (for " + origin_bill + ")",
+                        "name": bill_line.name + " Bill Partner: "+ vendor_name+ "\n" + " (for " + origin_bill + ")",
                         "price_unit": tax_amount,
                     }
                 for move_id, created_lines in move_data.items():
