@@ -60,7 +60,7 @@ class SchoolBaseRelationship(models.Model):
     #         ('other', "Other"),
     #     ],
     #     string="Type", default='other'
-    # )
+    # ) .
 
 
 class RelationshipType(models.Model):
