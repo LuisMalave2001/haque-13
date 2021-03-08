@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api, _
-from odoo.addons.school_base.models.res_partner import SELECT_STATUS_TYPES
+import datetime
+
+from odoo.exceptions import UserError
+
+
+# from odoo.addons.school_base.models.res_partner import SELECT_STATUS_TYPES
 
 
 class SchoolCode(models.Model):
@@ -22,8 +27,31 @@ class SchoolYear(models.Model):
 
     name = fields.Char(string="Name", required=True)
     sequence = fields.Integer(default=1)
+    facts_id = fields.Integer("Facts ID", readonly=True)
+    active_admissions = fields.Boolean('Active admissions')
     school_code_id = fields.Many2one("school_base.school_code", string="School code")
     district_code_id = fields.Many2one(related="school_code_id.district_code_id")
+
+    date_start = fields.Date(required=True, default=datetime.datetime.now().date())
+    date_end = fields.Date(required=True, default=datetime.datetime.now().date())
+
+    @api.constrains('date_start', 'date_end')
+    def _check_date_ranges(self):
+        for school_year_id in self:
+            school_year_ids = self.search([
+                ('school_code_id', '=', school_year_id.school_code_id.id),
+                ('id', '!=', school_year_id.id)
+            ])
+
+            # Collision detection
+            for other_school_year_id in school_year_ids:
+                if (school_year_id.date_end < other_school_year_id.date_start
+                        or school_year_id.date_start > other_school_year_id.date_end):
+                    continue
+                else:
+                    raise UserError(
+                        _("Date range collision detected between %s and %s school years in %s school code")
+                        % (school_year_id.name, other_school_year_id.name, school_year_id.school_code_id.name))
 
     @api.onchange('school_code_id')
     def _get_school_code_id_domain(self):
@@ -39,16 +67,33 @@ class GradeLevel(models.Model):
 
     name = fields.Char(string="Name", required=True)
     sequence = fields.Integer(default=1)
-    active_admissions = fields.Boolean('Active admissions')
+    next_grade_level_id = fields.Many2one("school_base.grade_level", string="Next grade level")
     school_code_id = fields.Many2one("school_base.school_code", string="School code")
     district_code_id = fields.Many2one(related="school_code_id.district_code_id")
+    user_type_id = fields.Many2one('school_base.grade_level.type')
+    active_admissions = fields.Boolean('Active admissions')
     capacity = fields.Integer()
 
     @api.onchange('school_code_id')
-    def _get_school_code_id_domain(self):
+    def _get_schiool_code_id_doman(self):
         self.ensure_one()
         school_code_ids = self.district_code_id.school_code_ids.ids
         return {'domain': {'school_code_id': [('id', 'in', school_code_ids)]}}
+
+
+class SchoolBaseGradeLevelType(models.Model):
+    _name = 'school_base.grade_level.type'
+    _description = "Grade level type"
+
+    type = fields.Selection(
+        [
+            ('elementary', _("Elementary")),
+            ('middle_school', _("Middle school")),
+            ('high_school', _("High school")),
+        ],
+        required=True
+    )
+    name = fields.Char(required=True)
 
 
 class DistrictCode(models.Model):
@@ -66,21 +111,67 @@ class Placement(models.Model):
     """ An informative model for students """
     _name = 'school_base.placement'
     _description = "Placement"
-    name = fields.Char()
+    name = fields.Char(string="Placement", required=True, translate=True)
+    key = fields.Char(string="Key")
 
 
 class WithdrawReason(models.Model):
     """ Why does the student withdraw? """
     _name = 'school_base.withdraw_reason'
     _description = "Withdraw reasons"
+    name = fields.Char(string="WithDraw Reason", required=True, translate=True)
+    key = fields.Char(string="Key")
 
-    name = fields.Char()
+
+class EnrollmentStatus(models.Model):
+    """ SubStatus for students """
+    _name = 'school_base.enrollment.status'
+    _description = "Enrollment Status"
+    # status_id = fields.Selection(SELECT_STATUS_TYPES, string='Status')
+    name = fields.Char(string="Name", required=True, translate=True)
+    key = fields.Char(string="Key")
+    note = fields.Char(string="Description")
 
 
-class SubStatus(models.Model):
+class EnrollmentSubStatus(models.Model):
     """ SubStatus for students """
     _name = 'school_base.enrollment.sub_status'
     _description = "Enrollment sub status"
 
-    status_id = fields.Selection(SELECT_STATUS_TYPES, string='Status')
-    name = fields.Char()
+    # status_id = fields.Selection(SELECT_STATUS_TYPES, string='Status')
+    # status_id = fields.Selection([('1', '1')], string='Status')
+    status_id = fields.Many2one('school_base.enrollment.status', String='Status')
+    name = fields.Char(string="Name", required=True, translate=True)
+    key = fields.Char(string="Key")
+
+
+class MaritalStatus(models.Model):
+    """ An informative model for students """
+    _name = 'school_base.marital_status'
+    _description = "Marital Status"
+    name = fields.Char(string="Name", required=True, translate=True)
+    key = fields.Char(string="Key")
+
+
+class Gender(models.Model):
+    _name = "school_base.gender"
+    _description = "School base gender"
+    name = fields.Char("Gender", required=True, translate=True)
+    key = fields.Char("Key")
+
+
+class SchoolBaseEnrollmentHistory(models.Model):
+    _name = 'school_base.enrollment.history'
+    _description = "Enrollment history"
+    _order = 'history_date'
+
+    student_id = fields.Many2one('res.partner', required=True)
+    school_code_id = fields.Many2one('school_base.school_code')
+    school_year_id = fields.Many2one('school_base.school_year')
+    grade_level_id = fields.Many2one('school_base.grade_level')
+
+    enrollment_status_id = fields.Many2one('school_base.enrollment.status')
+    enrollment_sub_status_id = fields.Many2one('school_base.enrollment.sub_status')
+
+    note = fields.Text()
+    history_date = fields.Datetime(default=datetime.datetime.now())
