@@ -118,10 +118,10 @@
                                                 <separator colspan="2"/>
 
                                                 <label for='grade_level_id'/>
-                                                <label for='student_status_id'/>
+<!--                                                <label for='student_status_id'/>-->
 
                                                 <field name="grade_level_id" nolabel="1"/>
-                                                <field name="student_status_id" nolabel="1"/>
+<!--                                                <field name="student_status_id" nolabel="1"/>-->
 
                                                 <separator colspan="2"/>
 
@@ -137,10 +137,10 @@
                                                 <field name="next_school_code_id"/>
                                                 <separator colspan="2"/>
 
-                                                <label for='student_next_status_id'/>
+<!--                                                <label for='student_next_status_id'/>-->
                                                 <label for='next_grade_level_id'/>
 
-                                                <field name="student_next_status_id" nolabel="1"/>
+<!--                                                <field name="student_next_status_id" nolabel="1"/>-->
                                                 <field name="next_grade_level_id" nolabel="1"/>
                                             </group>
 
