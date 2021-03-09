@@ -91,6 +91,7 @@ class ResPartnerMakeSale(models.TransientModel):
                                 if not parent_category_id:
                                     raise UserError(_("%s doesn't have a responsible family for %s") % (partner_id.name, product_id.categ_id.complete_name))
 
+
                                 percent_sum = sum([category.percent for category in partner_id.family_res_finance_ids if
                                                    category.category_id == parent_category_id and category.family_id == family_id])
                                 percent_sum /= 100
