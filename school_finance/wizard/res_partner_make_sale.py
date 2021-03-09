@@ -64,6 +64,10 @@ class ResPartnerMakeSale(models.TransientModel):
                     # We build several sale order depending on
                     for family_id in partner_id.family_ids:
                         sale_dict = dict()
+
+                        if not family_id.invoice_address_id:
+                            raise UserError(_("The student (%s[%s])'s family %s[%s] doesn't have an invoice address!") % (partner_id.name, partner_id.id, family_id.name, family_id.id))
+
                         sale_dict["partner_id"] = family_id.invoice_address_id.id
                         sale_dict["student_id"] = partner_id.id
                         sale_dict["family_id"] = family_id.id
@@ -86,6 +90,7 @@ class ResPartnerMakeSale(models.TransientModel):
 
                                 if not parent_category_id:
                                     raise UserError(_("%s doesn't have a responsible family for %s") % (partner_id.name, product_id.categ_id.complete_name))
+
 
                                 percent_sum = sum([category.percent for category in partner_id.family_res_finance_ids if
                                                    category.category_id == parent_category_id and category.family_id == family_id])

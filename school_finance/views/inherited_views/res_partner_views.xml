@@ -107,7 +107,6 @@
                         <field name="customer_name"/>
                         <field name="sponsor"/> 
                     </group>
-
                 </page>
             </notebook>
         </field>
