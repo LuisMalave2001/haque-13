@@ -13,6 +13,9 @@ class SchoolFinance(models.Model):
         'tree_view_ref': 'account.view_invoice_tree'
         })
     invoice_address_id = fields.Many2one("res.partner", string="Invoice Address")
+    customer_name = fields.Char("Customer Name")
+    sponsor = fields.Boolean("Sponsor")
+
     family_res_finance_ids = fields.One2many("school_finance.financial.res.percent", 'partner_id', string="Family resposability")
     student_invoice_ids = fields.One2many("account.move", "student_id", string="Student Invoices", domain=[('type', '=', 'out_invoice')])
 

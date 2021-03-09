@@ -64,10 +64,6 @@ class ResPartnerMakeSale(models.TransientModel):
                     # We build several sale order depending on
                     for family_id in partner_id.family_ids:
                         sale_dict = dict()
-
-                        if not family_id.invoice_address_id:
-                            raise UserError(_("The student (%s[%s])'s family %s[%s] doesn't have an invoice address!") % (partner_id.name, partner_id.id, family_id.name, family_id.id))
-
                         sale_dict["partner_id"] = family_id.invoice_address_id.id
                         sale_dict["student_id"] = partner_id.id
                         sale_dict["family_id"] = family_id.id
